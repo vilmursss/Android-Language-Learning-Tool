@@ -2,18 +2,18 @@ package com.example.android.wordgameandroid;
 
 public class Word {
 
-    private String id;
+    private int id;
     private String firstWord;
     private String secondWord;
     public Word(){
     }
-    public Word(String id, String firstWord, String secondWord) {
+    public Word(int id, String firstWord, String secondWord) {
         this.id = id;
         this.firstWord = firstWord;
         this.secondWord = secondWord;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -25,7 +25,7 @@ public class Word {
         this.secondWord = secondWord;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

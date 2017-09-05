@@ -3,8 +3,10 @@ package com.example.android.wordgameandroid;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
 public class DbHandler extends SQLiteOpenHelper {
 
@@ -45,13 +47,23 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public int getShopsCount() {
-        String countQuery = "SELECT * FROM " + WORD_TABLE;
+    public int getWordCount() {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(countQuery, null);
-        cursor.close();
+        final String DATABASE_COMPARE = "select count(*) from words";
 
-// return count
-        return cursor.getCount();
+        int rowCount = (int) DatabaseUtils.longForQuery(db, DATABASE_COMPARE, null);
+
+        return rowCount;
+    }
+
+    public int getBiggestId() {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        final SQLiteStatement stmt = db.compileStatement("SELECT MAX(" + ID + ") FROM " + WORD_TABLE + "");
+
+        if(stmt == null){
+            return 0;
+        }
+        return (int) stmt.simpleQueryForLong();
     }
 }

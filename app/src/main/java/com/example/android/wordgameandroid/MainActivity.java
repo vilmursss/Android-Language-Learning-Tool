@@ -17,4 +17,9 @@ public class MainActivity extends AppCompatActivity {
         Intent i = new Intent(this, AddWord.class);
         startActivity(i);
     }
+
+    public void modifyWord(View view){
+        Intent i = new Intent(this, ModifyWords.class);
+        startActivity(i);
+    }
 }

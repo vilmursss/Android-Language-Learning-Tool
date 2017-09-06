@@ -8,6 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DbHandler extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
@@ -56,7 +59,7 @@ public class DbHandler extends SQLiteOpenHelper {
         return rowCount;
     }
 
-    public int getBiggestId() {
+    public int getHighestId() {
 
         SQLiteDatabase db = this.getReadableDatabase();
         final SQLiteStatement stmt = db.compileStatement("SELECT MAX(" + ID + ") FROM " + WORD_TABLE + "");
@@ -66,4 +69,30 @@ public class DbHandler extends SQLiteOpenHelper {
         }
         return (int) stmt.simpleQueryForLong();
     }
+
+    public List<Word> getWord(String word) {
+
+        List<Word> wordList = new ArrayList<Word>();
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String WHERE = "" + FIRST_WORD + "='" + word + "' OR " + SECOND_WORD + "='" + word + "' ";
+        String selectQuery = "SELECT * FROM " + WORD_TABLE + " WHERE " + WHERE;
+        Cursor query = db.rawQuery(selectQuery, null);
+
+        if (query.moveToFirst()) {
+            do {
+
+                Word wordPair = new Word();
+                wordPair.setId(Integer.parseInt(query.getString(0)));
+                wordPair.setFirstWord(query.getString(1));
+                wordPair.setSecondWord(query.getString(2));
+                wordList.add(wordPair);
+
+            } while (query.moveToNext());
+        }
+
+        return wordList;
+    }
+
 }

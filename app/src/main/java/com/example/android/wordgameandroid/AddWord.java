@@ -21,7 +21,7 @@ public class AddWord extends AppCompatActivity {
 
         DbHandler dbHandler = new DbHandler(this);
 
-        int id = dbHandler.getBiggestId();
+        int id = dbHandler.getHighestId();
         id++;
 
         firstWord = (EditText) findViewById(R.id.firstWord);

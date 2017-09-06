@@ -15,19 +15,22 @@ public class SearchResults extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
+        eText = (EditText) findViewById(R.id.editText);
 
         String searchKey = getIntent().getExtras().getString("searchKey");
-
         DbHandler dbHandler = new DbHandler(this);
-
         List<Word> wordObject = dbHandler.getWord(searchKey);
+        String checkId = String.valueOf(wordObject.get(0).getId());
 
-       String firstWord = wordObject.get(0).getSecondWord();
+        if(checkId.equals("0")){
+            String errorText = "No words found!";
+            eText.setText(errorText);
+        }
 
-       eText = (EditText) findViewById(R.id.editText);
-
-       eText.setText(firstWord);
-
+        else {
+            String firstWord = wordObject.get(0).getSecondWord();
+            eText.setText(firstWord);
+        }
 
     }
 }

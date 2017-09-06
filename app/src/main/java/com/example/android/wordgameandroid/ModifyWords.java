@@ -21,9 +21,13 @@ public class ModifyWords extends AppCompatActivity {
         searchKey = (EditText) findViewById(R.id.searchWord);
         String dbSearchString = searchKey.getText().toString();
 
-        Intent i = new Intent(this, SearchResults.class);
-        i.putExtra("searchKey", dbSearchString);
-        startActivity(i);
-
+        if(dbSearchString.length() < 3){
+            searchKey.setError("You need to have at least three letters in this field");
+        }
+        else {
+            Intent i = new Intent(this, SearchResults.class);
+            i.putExtra("searchKey", dbSearchString);
+            startActivity(i);
+        }
     }
 }

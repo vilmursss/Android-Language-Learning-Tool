@@ -30,7 +30,17 @@ public class AddWord extends AppCompatActivity {
         String firstWordToString = firstWord.getText().toString();
         String secondWordToString = secondWord.getText().toString();
 
-        dbHandler.addWord(new Word(id, firstWordToString,secondWordToString));
+        if(firstWordToString.length() < 1){
+            firstWord.setError("This field can not be blank");
+        }
+
+        else if(secondWordToString.length() < 1){
+            secondWord.setError("This field can not be blank");
+        }
+
+        else {
+            dbHandler.addWord(new Word(id, firstWordToString, secondWordToString));
+        }
 
     }
 

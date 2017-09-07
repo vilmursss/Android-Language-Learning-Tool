@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/first_word"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:fontFamily="monospace"
+        android:textSize="20sp"
+        android:layout_marginRight="5dp"
+        tools:text="First word" />
+
+    <TextView
+        android:id="@+id/equals"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/first_word"
+        android:fontFamily="monospace"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:layout_marginRight="5dp"
+        android:text="="
+        tools:text="=" />
+
+    <TextView
+        android:id="@+id/second_word"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:textColor="#000"
+        android:textSize="20sp"
+        tools:text="Second word"
+        android:layout_toRightOf="@+id/equals"
+         />
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="40sp"
+        android:layout_height="30sp"
+        android:layout_gravity="center_vertical|end"
+        android:background="#FFFFFF"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:text="Edit"
+        android:textColor="#0099CC"
+        android:layout_alignParentRight="true" />
+</RelativeLayout>

@@ -18,7 +18,6 @@
         </activity>
         <activity android:name=".AddWord" />
         <activity android:name=".ModifyWords" />
-        <activity android:name=".SearchResults"></activity>
     </application>
 
 </manifest>

@@ -70,6 +70,23 @@ public class DbHandler extends SQLiteOpenHelper {
         return (int) stmt.simpleQueryForLong();
     }
 
+    public void updateWordPair(String id, String firstWord, String secondWord){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String updateQuery = "UPDATE " + WORD_TABLE + " SET " + FIRST_WORD + " = '" + firstWord + "', " + SECOND_WORD
+                + " = '" + secondWord + "' WHERE " + ID + " = " + id;
+        db.execSQL(updateQuery);
+        db.close();
+    }
+
+    public void deleteWordPair(String id){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String deleteQuery = "DELETE FROM " + WORD_TABLE + " WHERE " + ID + " = " + id;
+        db.execSQL(deleteQuery);
+        db.close();
+
+    }
+
     public List<Word> getWord(String word) {
 
         List<Word> wordList = new ArrayList<Word>();

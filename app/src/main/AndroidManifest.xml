@@ -18,6 +18,7 @@
         </activity>
         <activity android:name=".AddWord" />
         <activity android:name=".ModifyWords" />
+        <activity android:name=".WordEdit"></activity>
     </application>
 
 </manifest>

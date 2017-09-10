@@ -40,6 +40,11 @@ public class AddWord extends AppCompatActivity {
 
         else {
             dbHandler.addWord(new Word(id, firstWordToString, secondWordToString));
+
+            Toast.makeText(this, "Word pair saved!", Toast.LENGTH_SHORT).show();
+
+            firstWord.setText("");
+            secondWord.setText("");
         }
 
     }

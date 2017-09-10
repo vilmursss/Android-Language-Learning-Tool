@@ -41,7 +41,7 @@
         android:layout_toRightOf="@+id/equals"
          />
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/edit_button"
         android:layout_width="40sp"
         android:layout_height="30sp"
         android:layout_gravity="center_vertical|end"

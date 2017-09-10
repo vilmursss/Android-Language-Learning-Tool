@@ -2,6 +2,7 @@ package com.example.android.wordgameandroid;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ public class ListAdapter extends ArrayAdapter<Word> {
             holder = new CustomerHolder();
             holder.firstWord = (TextView) row.findViewById(R.id.first_word);
             holder.secondWord = (TextView) row.findViewById(R.id.second_word);
+            holder.btnEdit = (Button) row.findViewById(R.id.edit_button);
             row.setTag(holder);
 
         } else {
@@ -46,30 +48,27 @@ public class ListAdapter extends ArrayAdapter<Word> {
 
         }
         Word wordObject = data.get(position);
-        holder.firstWord.setText(String.valueOf(wordObject.getFirstWord()));
+        holder.firstWord.setText(wordObject.getFirstWord());
         holder.secondWord.setText(wordObject.getSecondWord());
-/*
-        final String getName = user.getName();
-        final String getAddress = user.getAddress();
-        final String getPhoneNum = user.getPhoneNumber();
+
+        final String btnSendId = String.valueOf(wordObject.getId());
+        final String btnSendFirstWord = wordObject.getFirstWord();
+        final String btnSendSecondWord = wordObject.getSecondWord();
 
         // Edit painiketta painaessa otettaan tämän tietyn kentät datat ylös ja ne lähetetään luokkaan, jossa asiakkaan tietoja voi muokata
 
-        holder.btnEdit.setOnClickListener(new OnClickListener() {
+        holder.btnEdit.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-
-                Intent intent = new Intent(context, modifyCustomer.class);
-                intent.putExtra("name", getName);
-                intent.putExtra("address", getAddress);
-                intent.putExtra("pnum", getPhoneNum);
-                intent.putExtra("id", getID);
-
+                Intent intent = new Intent(context, WordEdit.class);
+                intent.putExtra("id_edit_extra", btnSendId);
+                intent.putExtra("first_word_edit_extra", btnSendFirstWord);
+                intent.putExtra("second_word_edit_extra", btnSendSecondWord);
                 context.startActivity(intent);
             }
         });
-
+/*
         // Delete painiketta painamalla varmistetaan alertikkunoin, että käyttäjä on varma tämän tietyn asiakkaan poistosta
 
         holder.btnDelete.setOnClickListener(new OnClickListener() {
@@ -143,6 +142,7 @@ public class ListAdapter extends ArrayAdapter<Word> {
 
         TextView firstWord;
         TextView secondWord;
+        Button btnEdit;
 
     }
 }

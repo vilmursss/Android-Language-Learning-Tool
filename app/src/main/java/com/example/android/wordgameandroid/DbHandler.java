@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class DbHandler extends SQLiteOpenHelper {
 
@@ -85,6 +86,41 @@ public class DbHandler extends SQLiteOpenHelper {
         db.execSQL(deleteQuery);
         db.close();
 
+    }
+
+    public void deleteAllFromDb(){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        db.delete(WORD_TABLE, null, null);
+        db.close();
+
+    }
+
+    public Word getRandomWord(){
+
+        if(getWordCount() < 1){
+            Word returnWordObject = new Word(0, "No words in DB", "");
+
+            return returnWordObject;
+        }
+
+        Word returnWordObject = new Word();
+        SQLiteDatabase db = this.getReadableDatabase();
+        int maxId = getWordCount();
+        Random rand = new Random();
+        String randomId = String.valueOf(rand.nextInt(maxId) + 1);
+
+        String WHERE = "" + ID + " = " + randomId;
+        String selectQuery = "SELECT * FROM " + WORD_TABLE + " WHERE " + WHERE;
+        Cursor query = db.rawQuery(selectQuery, null);
+
+            query.moveToFirst();
+            returnWordObject.setId(Integer.parseInt(query.getString(0)));
+            returnWordObject.setFirstWord(query.getString(1));
+            returnWordObject.setSecondWord(query.getString(2));
+            db.close();
+
+        return returnWordObject;
     }
 
     public List<Word> getWord(String word) {

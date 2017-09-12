@@ -1,5 +1,12 @@
 package com.example.android.wordgameandroid;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +20,11 @@ import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
 
+    private SoundPool soundPool;
+    private int soundID;
+    boolean loaded = false;
+
+    Drawable buttonBackGround;
     TextView translatableWord;
     Button firstOption;
     Button secondOption;
@@ -34,6 +46,19 @@ public class GameActivity extends AppCompatActivity {
         secondOption = (Button) findViewById(R.id.secondBtn);
         thirdOption = (Button) findViewById(R.id.thirdBtn);
         fourthOption = (Button) findViewById(R.id.fourthBtn);
+
+        buttonBackGround = firstOption.getBackground();
+
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId,
+                                       int status) {
+                loaded = true;
+            }
+        });
+        soundID = soundPool.load(this, R.raw.correct_answer, 1);
+
         newQuestion();
     }
 
@@ -163,6 +188,19 @@ public class GameActivity extends AppCompatActivity {
         return randomReturn;
     }
 
+    public void playCorrectAnswerSound(){
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        float actualVolume = (float) audioManager
+                .getStreamVolume(AudioManager.STREAM_MUSIC);
+        float maxVolume = (float) audioManager
+                .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float volume = actualVolume / maxVolume;
+        // Is the sound loaded already?
+        if (loaded) {
+            soundPool.play(soundID, volume, volume, 1, 0, 1f);
+        }
+    }
+
     public void setCorrectWord() {
         boolean check = false;
         while (!check) {
@@ -201,11 +239,41 @@ public class GameActivity extends AppCompatActivity {
         return false;
     }
 
+    public void waitTwoSecTimer(){
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                setAllBackToDefault();
+                newQuestion();
+            }
+        }, 2000);
+    }
+
+
+    public void setAllBackToDefault(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            firstOption.setBackground(buttonBackGround);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            secondOption.setBackground(buttonBackGround);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            thirdOption.setBackground(buttonBackGround);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            fourthOption.setBackground(buttonBackGround);
+        }
+    }
+
     public void firstBtnClick(View view) {
 
         if (correctAnswer == 1) {
-            newQuestion();
+            playCorrectAnswerSound();
+            firstOption.setBackgroundColor(Color.GREEN);
+            waitTwoSecTimer();
         } else {
+            firstOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
 
@@ -214,8 +282,11 @@ public class GameActivity extends AppCompatActivity {
     public void secondBtnClick(View view) {
 
         if (correctAnswer == 2) {
-            newQuestion();
+            playCorrectAnswerSound();
+            secondOption.setBackgroundColor(Color.GREEN);
+            waitTwoSecTimer();
         } else {
+            secondOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
 
@@ -224,8 +295,11 @@ public class GameActivity extends AppCompatActivity {
     public void thirdBtnClick(View view) {
 
         if (correctAnswer == 3) {
-            newQuestion();
+            playCorrectAnswerSound();
+            thirdOption.setBackgroundColor(Color.GREEN);
+            waitTwoSecTimer();
         } else {
+            thirdOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
 
@@ -234,8 +308,11 @@ public class GameActivity extends AppCompatActivity {
     public void fourthBtnClick(View view) {
 
         if (correctAnswer == 4) {
-            newQuestion();
+            playCorrectAnswerSound();
+            fourthOption.setBackgroundColor(Color.GREEN);
+            waitTwoSecTimer();
         } else {
+            fourthOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
 

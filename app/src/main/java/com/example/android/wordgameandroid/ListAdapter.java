@@ -26,6 +26,8 @@ public class ListAdapter extends ArrayAdapter<Word> {
         this.data = data;
     }
 
+    // Function for making a customized list item
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
@@ -55,7 +57,7 @@ public class ListAdapter extends ArrayAdapter<Word> {
         final String btnSendFirstWord = wordObject.getFirstWord();
         final String btnSendSecondWord = wordObject.getSecondWord();
 
-        // Edit painiketta painaessa otettaan tämän tietyn kentät datat ylös ja ne lähetetään luokkaan, jossa asiakkaan tietoja voi muokata
+        // Edit button, take list item details and open new activity
 
         holder.btnEdit.setOnClickListener(new View.OnClickListener() {
 
@@ -68,75 +70,12 @@ public class ListAdapter extends ArrayAdapter<Word> {
                 context.startActivity(intent);
             }
         });
-/*
-        // Delete painiketta painamalla varmistetaan alertikkunoin, että käyttäjä on varma tämän tietyn asiakkaan poistosta
 
-        holder.btnDelete.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-                builder.setTitle("Customer delete");
-                builder.setMessage("Are you sure you wanna delete this " + getName + " customer ?");
-
-                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dBHandler db = new dBHandler(context);
-                        db.deleteCustomer(getID);
-                        dialog.dismiss();
-
-                        // Luodaan toinen dialogi, jossa ilmaistaan tieto että asiakas on poistettu
-
-                        AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-                        alertDialog.setTitle("Customer deleted");
-                        alertDialog.setMessage("Customer deleted!");
-                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                        dialog.dismiss();
-
-                                        String currentClass = context.getClass().getSimpleName().toString();
-
-                                        if (currentClass.equals("displayAllCustomers")) {
-                                            Intent intent = new Intent(context, displayAllCustomers.class);
-                                            context.startActivity(intent);
-                                        }
-
-                                        if (currentClass.equals("DisplaySearchResults")) {
-                                            Intent intent = new Intent(context, search.class);
-                                            context.startActivity(intent);
-                                        }
-                                    }
-                                });
-
-                        alertDialog.show();
-                    }
-                });
-
-                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog alert = builder.create();
-                alert.show();
-            }
-        });
-*/
         return row;
 
     }
 
-    // Kentät ja painikkeet, jotka kustomoidulle riville tulevat näkyviin
+    // CustomHolder fields
 
     static class CustomerHolder {
 

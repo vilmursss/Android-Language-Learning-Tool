@@ -40,6 +40,8 @@ public class DbHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    // Add new word pair
+
     public void addWord(Word word) {
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -51,6 +53,8 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Get current database row count
+
     public int getWordCount() {
         SQLiteDatabase db = this.getReadableDatabase();
         final String DATABASE_COMPARE = "select count(*) from words";
@@ -59,6 +63,8 @@ public class DbHandler extends SQLiteOpenHelper {
 
         return rowCount;
     }
+
+    // Return highest word pair ID
 
     public int getHighestId() {
 
@@ -71,6 +77,8 @@ public class DbHandler extends SQLiteOpenHelper {
         return (int) stmt.simpleQueryForLong();
     }
 
+    // Update word pair values
+
     public void updateWordPair(String id, String firstWord, String secondWord){
         SQLiteDatabase db = this.getReadableDatabase();
         String updateQuery = "UPDATE " + WORD_TABLE + " SET " + FIRST_WORD + " = '" + firstWord + "', " + SECOND_WORD
@@ -78,6 +86,8 @@ public class DbHandler extends SQLiteOpenHelper {
         db.execSQL(updateQuery);
         db.close();
     }
+
+    // Delete word pair from database
 
     public void deleteWordPair(String id){
 
@@ -88,6 +98,8 @@ public class DbHandler extends SQLiteOpenHelper {
 
     }
 
+    // Clear whole database
+
     public void deleteAllFromDb(){
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -95,6 +107,8 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
 
     }
+
+    // Return random word object from database
 
     public Word getRandomWord(){
 
@@ -122,6 +136,8 @@ public class DbHandler extends SQLiteOpenHelper {
 
         return returnWordObject;
     }
+
+    // Return all word pairs based on search string
 
     public List<Word> getWord(String word) {
 

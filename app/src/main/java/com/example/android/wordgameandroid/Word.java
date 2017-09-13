@@ -1,12 +1,16 @@
 package com.example.android.wordgameandroid;
 
+// Basic word pair class
+
 public class Word {
 
     private int id;
     private String firstWord;
     private String secondWord;
+
     public Word(){
     }
+
     public Word(int id, String firstWord, String secondWord) {
         this.id = id;
         this.firstWord = firstWord;

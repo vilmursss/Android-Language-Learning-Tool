@@ -17,6 +17,8 @@ public class AddWord extends AppCompatActivity {
         setContentView(R.layout.activity_add_word);
     }
 
+    // Function for submit button click event, where checks that fields are not empty
+
     public void submitBtn(View view){
 
         DbHandler dbHandler = new DbHandler(this);

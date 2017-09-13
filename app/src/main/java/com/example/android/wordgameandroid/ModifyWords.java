@@ -16,8 +16,10 @@ public class ModifyWords extends AppCompatActivity {
 
     TextView searchResults;
     EditText searchKey;
+
     ListView wordPairList;
     ListAdapter listAdapter;
+
     ArrayList<Word> wordPairArray = new ArrayList<Word>();
 
     @Override
@@ -27,6 +29,8 @@ public class ModifyWords extends AppCompatActivity {
         searchResults = (TextView) findViewById(R.id.searchResultsTextView);
         searchResults.setVisibility(View.INVISIBLE);
     }
+
+    // Click even for searching word pairs from database
 
     public void searchBtn(View view) {
         searchResults.setVisibility(View.VISIBLE);
@@ -54,7 +58,11 @@ public class ModifyWords extends AppCompatActivity {
                 wordPairList = (ListView) findViewById(R.id.listView);
                 wordPairList.setItemsCanFocus(false);
                 wordPairList.setAdapter(listAdapter);
-            } else {
+            }
+
+            // If word pairs found, then show them on a list
+
+            else {
                 for (Word wordPairObject : wordObject) {
                     Word addWordObject = new Word(wordPairObject.getId(), wordPairObject.getFirstWord(), wordPairObject.getSecondWord());
                     wordPairArray.add(addWordObject);

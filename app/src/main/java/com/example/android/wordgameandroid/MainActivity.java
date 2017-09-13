@@ -16,15 +16,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+    // Open add word pair activity
+
     public void addWord(View view){
         Intent i = new Intent(this, AddWord.class);
         startActivity(i);
     }
 
+    // Open modify word pair activity
+
     public void modifyWord(View view){
         Intent i = new Intent(this, ModifyWords.class);
         startActivity(i);
     }
+
+    // Toast current row count, mostly for development test purposes
 
     public void rowCount(View view){
         DbHandler dbHandler = new DbHandler(this);
@@ -32,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Current row count: " + wordCount + " words", Toast.LENGTH_SHORT).show();
     }
+
+    // Delete everything from database
 
     public void clearDB(View view){
         final DbHandler dbHandler = new DbHandler(this);
@@ -72,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alert = builder.create();
         alert.show();
     }
+
+    // Start game activity
 
     public void playGame(View view){
         Intent i = new Intent(this, GameActivity.class);

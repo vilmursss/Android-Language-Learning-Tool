@@ -20,18 +20,31 @@ import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
 
+    // SoundPool
+
     private SoundPool soundPool;
     private int soundID;
     private int failureID;
     boolean loaded = false;
 
+    // Copy button background object
+
     Drawable buttonBackGround;
     TextView translatableWord;
+
+    // Clickable option buttons
+
     Button firstOption;
     Button secondOption;
     Button thirdOption;
     Button fourthOption;
+
+    // DbHandler
+
     DbHandler dbHandler = new DbHandler(this);
+
+    // Data structure for already played words and other helping variables
+
     HashMap<String, String> playedWordsHashMap = new HashMap<String, String>();
     int playedWordsCount = 0;
     int correctAnswer = 0;
@@ -40,15 +53,18 @@ public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
         translatableWord = (TextView) findViewById(R.id.roundWord);
         firstOption = (Button) findViewById(R.id.firstBtn);
         secondOption = (Button) findViewById(R.id.secondBtn);
         thirdOption = (Button) findViewById(R.id.thirdBtn);
         fourthOption = (Button) findViewById(R.id.fourthBtn);
-
         buttonBackGround = firstOption.getBackground();
+
+        // SoundPool manager loader
 
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
@@ -63,6 +79,8 @@ public class GameActivity extends AppCompatActivity {
 
         newQuestion();
     }
+
+    // Give new question
 
     public void newQuestion() {
 
@@ -102,6 +120,8 @@ public class GameActivity extends AppCompatActivity {
         }
 
     }
+
+    // Fill other options with random words from database besides correct answer
 
     public void fillOtherButtons() {
 
@@ -178,10 +198,14 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // Get random word from database
+
     public String getRandomWord() {
         Word randWord = dbHandler.getRandomWord();
         return randWord.getFirstWord();
     }
+
+    // Random number generator
 
     public int randomNumber() {
         Random rand = new Random();
@@ -190,6 +214,8 @@ public class GameActivity extends AppCompatActivity {
         return randomReturn;
     }
 
+    // If chosen option is correct, play this sound
+
     public void playCorrectAnswerSound(){
         AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         float actualVolume = (float) audioManager
@@ -197,11 +223,13 @@ public class GameActivity extends AppCompatActivity {
         float maxVolume = (float) audioManager
                 .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         float volume = actualVolume / maxVolume;
-        // Is the sound loaded already?
+
         if (loaded) {
             soundPool.play(soundID, volume, volume, 1, 0, 1f);
         }
     }
+
+    // If chosen option is wrong, play this sound
 
     public void playWrongAnswerSound(){
         AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -210,11 +238,13 @@ public class GameActivity extends AppCompatActivity {
         float maxVolume = (float) audioManager
                 .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         float volume = actualVolume / maxVolume;
-        // Is the sound loaded already?
+
         if (loaded) {
             soundPool.play(failureID, volume, volume, 1, 0, 1f);
         }
     }
+
+    // Set correct word using random number generator to one of options
 
     public void setCorrectWord() {
         boolean check = false;
@@ -223,8 +253,9 @@ public class GameActivity extends AppCompatActivity {
 
             if (playedWordsHashMap.containsKey(randWord.getSecondWord())) {
 
+            }
 
-            } else {
+            else {
                 playedWordsHashMap.put(randWord.getSecondWord(), randWord.getSecondWord());
                 translatableWord.setText(randWord.getSecondWord());
                 playedWordsCount++;
@@ -246,6 +277,8 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // If whole database is played, open new activity
+
     public boolean gameEnd() {
 
         if (playedWordsCount == dbHandler.getWordCount()) {
@@ -253,6 +286,8 @@ public class GameActivity extends AppCompatActivity {
         }
         return false;
     }
+
+    // Timer, which is used when option is chosen to mask the option button
 
     public void waitTwoSecTimer(){
 
@@ -265,6 +300,7 @@ public class GameActivity extends AppCompatActivity {
         }, 2000);
     }
 
+    // Set all buttons back to default color
 
     public void setAllBackToDefault(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -281,6 +317,8 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // First option click
+
     public void firstBtnClick(View view) {
 
         if (correctAnswer == 1) {
@@ -292,8 +330,9 @@ public class GameActivity extends AppCompatActivity {
             firstOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
-
     }
+
+    // Second option click
 
     public void secondBtnClick(View view) {
 
@@ -306,8 +345,9 @@ public class GameActivity extends AppCompatActivity {
             secondOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
-
     }
+
+    // Third option click
 
     public void thirdBtnClick(View view) {
 
@@ -320,8 +360,9 @@ public class GameActivity extends AppCompatActivity {
             thirdOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
-
     }
+
+    // Fourth option click
 
     public void fourthBtnClick(View view) {
 
@@ -334,8 +375,9 @@ public class GameActivity extends AppCompatActivity {
             fourthOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
-
     }
+
+    // Function for wrong answer
 
     public void wrongAnswer(){
         translatableWord.setText("sry");

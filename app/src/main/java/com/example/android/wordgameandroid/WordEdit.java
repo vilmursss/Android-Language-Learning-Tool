@@ -16,15 +16,20 @@ public class WordEdit extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_word_edit);
 
+        // Get sent extras to fill fields with these values
+
         String getFirstWord = getIntent().getExtras().getString("first_word_edit_extra");
         String getSecondWord = getIntent().getExtras().getString("second_word_edit_extra");
         wordPairId = getIntent().getExtras().getString("id_edit_extra");
 
         firstWord = (EditText) findViewById(R.id.firstWordEdit);
         firstWord.setText(getFirstWord);
+
         secondWord = (EditText) findViewById(R.id.secondWordEdit);
         secondWord.setText(getSecondWord);
     }
+
+    // Update word pair values 
 
     public void updateWordEditBtn(View view){
         DbHandler dbHandler = new DbHandler(this);
@@ -34,6 +39,8 @@ public class WordEdit extends AppCompatActivity {
 
        dbHandler.updateWordPair(wordPairId,getFirstWordText,getSecondWordText);
     }
+
+    // Delete word pair click event option
 
     public void deleteWordEditBtn(View view){
         DbHandler dbHandler = new DbHandler(this);

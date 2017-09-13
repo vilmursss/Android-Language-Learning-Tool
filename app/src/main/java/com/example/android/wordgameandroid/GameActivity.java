@@ -22,6 +22,7 @@ public class GameActivity extends AppCompatActivity {
 
     private SoundPool soundPool;
     private int soundID;
+    private int failureID;
     boolean loaded = false;
 
     Drawable buttonBackGround;
@@ -58,6 +59,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
         soundID = soundPool.load(this, R.raw.correct_answer, 1);
+        failureID = soundPool.load(this, R.raw.fail_answer, 1);
 
         newQuestion();
     }
@@ -201,6 +203,19 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    public void playWrongAnswerSound(){
+        AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+        float actualVolume = (float) audioManager
+                .getStreamVolume(AudioManager.STREAM_MUSIC);
+        float maxVolume = (float) audioManager
+                .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float volume = actualVolume / maxVolume;
+        // Is the sound loaded already?
+        if (loaded) {
+            soundPool.play(failureID, volume, volume, 1, 0, 1f);
+        }
+    }
+
     public void setCorrectWord() {
         boolean check = false;
         while (!check) {
@@ -273,6 +288,7 @@ public class GameActivity extends AppCompatActivity {
             firstOption.setBackgroundColor(Color.GREEN);
             waitTwoSecTimer();
         } else {
+            playWrongAnswerSound();
             firstOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
@@ -286,6 +302,7 @@ public class GameActivity extends AppCompatActivity {
             secondOption.setBackgroundColor(Color.GREEN);
             waitTwoSecTimer();
         } else {
+            playWrongAnswerSound();
             secondOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
@@ -299,6 +316,7 @@ public class GameActivity extends AppCompatActivity {
             thirdOption.setBackgroundColor(Color.GREEN);
             waitTwoSecTimer();
         } else {
+            playWrongAnswerSound();
             thirdOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
@@ -312,6 +330,7 @@ public class GameActivity extends AppCompatActivity {
             fourthOption.setBackgroundColor(Color.GREEN);
             waitTwoSecTimer();
         } else {
+            playWrongAnswerSound();
             fourthOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }

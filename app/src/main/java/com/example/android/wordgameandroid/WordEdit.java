@@ -29,7 +29,7 @@ public class WordEdit extends AppCompatActivity {
         secondWord.setText(getSecondWord);
     }
 
-    // Update word pair values 
+    // Update word pair values
 
     public void updateWordEditBtn(View view){
         DbHandler dbHandler = new DbHandler(this);

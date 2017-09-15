@@ -1,16 +1,22 @@
 package com.example.android.wordgameandroid;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -30,7 +36,11 @@ public class GameActivity extends AppCompatActivity {
     // Copy button background object
 
     Drawable buttonBackGround;
+
+    // Necessary textviews
+
     TextView translatableWord;
+    TextView pointsTextView;
 
     // Clickable option buttons
 
@@ -50,6 +60,16 @@ public class GameActivity extends AppCompatActivity {
     int correctAnswer = 0;
     String roundCorrectWord = "";
 
+    // ProgressBar
+
+    ProgressBar mProgressBar;
+    CountDownTimer mCountDownTimer;
+    int pbTimer = 0;
+
+    // Points
+
+    int gamePoints = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +78,9 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         translatableWord = (TextView) findViewById(R.id.roundWord);
+        pointsTextView = (TextView) findViewById(R.id.points);
+        pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
+
         firstOption = (Button) findViewById(R.id.firstBtn);
         secondOption = (Button) findViewById(R.id.secondBtn);
         thirdOption = (Button) findViewById(R.id.thirdBtn);
@@ -80,6 +103,33 @@ public class GameActivity extends AppCompatActivity {
         newQuestion();
     }
 
+    // Countdown timer for the progressBar
+
+    public void progressBarCountDown(){
+
+        pbTimer = 0;
+
+        mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
+        mProgressBar.setProgress(pbTimer);
+        mCountDownTimer=new CountDownTimer(10700,50) {
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                pbTimer++;
+                mProgressBar.setProgress((int)pbTimer);
+
+            }
+
+            @Override
+            public void onFinish() {
+
+                playWrongAnswerSound();
+
+            }
+        };
+        mCountDownTimer.start();
+    }
+
     // Give new question
 
     public void newQuestion() {
@@ -96,21 +146,25 @@ public class GameActivity extends AppCompatActivity {
                     correctAnswer = 1;
                     setCorrectWord();
                     fillOtherButtons();
+                    progressBarCountDown();
                     break;
                 case 2:
                     correctAnswer = 2;
                     setCorrectWord();
                     fillOtherButtons();
+                    progressBarCountDown();
                     break;
                 case 3:
                     correctAnswer = 3;
                     setCorrectWord();
                     fillOtherButtons();
+                    progressBarCountDown();
                     break;
                 case 4:
                     correctAnswer = 4;
                     setCorrectWord();
                     fillOtherButtons();
+                    progressBarCountDown();
                     break;
                 default:
                     translatableWord.setText("Should not happen");
@@ -317,6 +371,15 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    // Updates points, if answer was correct
+
+    public void updateGamePoints(){
+
+        gamePoints = gamePoints+(1500/pbTimer);
+        pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
+
+    }
+
     // First option click
 
     public void firstBtnClick(View view) {
@@ -324,6 +387,8 @@ public class GameActivity extends AppCompatActivity {
         if (correctAnswer == 1) {
             playCorrectAnswerSound();
             firstOption.setBackgroundColor(Color.GREEN);
+            updateGamePoints();
+            mCountDownTimer.cancel();
             waitTwoSecTimer();
         } else {
             playWrongAnswerSound();
@@ -339,6 +404,8 @@ public class GameActivity extends AppCompatActivity {
         if (correctAnswer == 2) {
             playCorrectAnswerSound();
             secondOption.setBackgroundColor(Color.GREEN);
+            updateGamePoints();
+            mCountDownTimer.cancel();
             waitTwoSecTimer();
         } else {
             playWrongAnswerSound();
@@ -354,6 +421,8 @@ public class GameActivity extends AppCompatActivity {
         if (correctAnswer == 3) {
             playCorrectAnswerSound();
             thirdOption.setBackgroundColor(Color.GREEN);
+            updateGamePoints();
+            mCountDownTimer.cancel();
             waitTwoSecTimer();
         } else {
             playWrongAnswerSound();
@@ -369,7 +438,10 @@ public class GameActivity extends AppCompatActivity {
         if (correctAnswer == 4) {
             playCorrectAnswerSound();
             fourthOption.setBackgroundColor(Color.GREEN);
+            updateGamePoints();
+            mCountDownTimer.cancel();
             waitTwoSecTimer();
+
         } else {
             playWrongAnswerSound();
             fourthOption.setBackgroundColor(Color.RED);

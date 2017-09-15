@@ -26,6 +26,8 @@ import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
 
+
+
     // SoundPool
 
     private SoundPool soundPool;
@@ -41,6 +43,7 @@ public class GameActivity extends AppCompatActivity {
 
     TextView translatableWord;
     TextView pointsTextView;
+    TextView gameOverText;
 
     // Clickable option buttons
 
@@ -77,6 +80,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        gameOverText = (TextView) findViewById(R.id.PickText);
         translatableWord = (TextView) findViewById(R.id.roundWord);
         pointsTextView = (TextView) findViewById(R.id.points);
         pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
@@ -452,7 +456,25 @@ public class GameActivity extends AppCompatActivity {
     // Function for wrong answer
 
     public void wrongAnswer(){
-        translatableWord.setText("sry");
+        hideAllButtons();
+        mCountDownTimer.cancel();
+        gameOverText.setText("Wrong answer :(");
+        translatableWord.setTextSize(20);
+        translatableWord.setText("You got " + gamePoints + " points \n" + "Do you wanna save this result? ");
+    }
+
+    // Hide all buttons
+
+    public void hideAllButtons(){
+
+        firstOption.setVisibility(View.INVISIBLE);
+        secondOption.setVisibility(View.INVISIBLE);
+        thirdOption.setVisibility(View.INVISIBLE);
+        fourthOption.setVisibility(View.INVISIBLE);
+
+        mProgressBar.setVisibility(View.INVISIBLE);
+
+
     }
 
 }

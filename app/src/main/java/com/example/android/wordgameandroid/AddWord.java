@@ -1,7 +1,11 @@
 package com.example.android.wordgameandroid;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -16,6 +20,30 @@ public class AddWord extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_word);
     }
+
+    // Create options menu
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.settings_menu, menu);
+        return true;
+    }
+
+    // Create items selectable on items menu
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem){
+        int id = menuItem.getItemId();
+        if(id == R.id.settings_menu){
+            Intent startIntentActivity = new Intent(this, SettingsActivity.class);
+            startIntentActivity.putExtra("CLASS_INFORMATION", AddWord.class);
+            startActivity(startIntentActivity);
+            return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
 
     // Function for submit button click event, where checks that fields are not empty
 

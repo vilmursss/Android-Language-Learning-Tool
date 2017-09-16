@@ -2,6 +2,7 @@ package com.example.android.wordgameandroid;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -13,6 +14,9 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
@@ -25,8 +29,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
-
-
 
     // SoundPool
 
@@ -44,6 +46,7 @@ public class GameActivity extends AppCompatActivity {
     TextView translatableWord;
     TextView pointsTextView;
     TextView gameOverText;
+    TextView mNotEnoughWords;
 
     // Clickable option buttons
 
@@ -51,6 +54,7 @@ public class GameActivity extends AppCompatActivity {
     Button secondOption;
     Button thirdOption;
     Button fourthOption;
+    Button moveToAddWords;
 
     // DbHandler
 
@@ -78,34 +82,69 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
 
-        gameOverText = (TextView) findViewById(R.id.PickText);
-        translatableWord = (TextView) findViewById(R.id.roundWord);
-        pointsTextView = (TextView) findViewById(R.id.points);
-        pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
+        if(dbHandler.getWordCount() >= 4) {
 
-        firstOption = (Button) findViewById(R.id.firstBtn);
-        secondOption = (Button) findViewById(R.id.secondBtn);
-        thirdOption = (Button) findViewById(R.id.thirdBtn);
-        fourthOption = (Button) findViewById(R.id.fourthBtn);
-        buttonBackGround = firstOption.getBackground();
+            setContentView(R.layout.activity_game);
 
-        // SoundPool manager loader
+            gameOverText = (TextView) findViewById(R.id.PickText);
+            translatableWord = (TextView) findViewById(R.id.roundWord);
+            pointsTextView = (TextView) findViewById(R.id.points);
+            pointsTextView.setText("Points: " + String.valueOf(gamePoints));
 
-        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId,
-                                       int status) {
-                loaded = true;
-            }
-        });
-        soundID = soundPool.load(this, R.raw.correct_answer, 1);
-        failureID = soundPool.load(this, R.raw.fail_answer, 1);
+            firstOption = (Button) findViewById(R.id.firstBtn);
+            secondOption = (Button) findViewById(R.id.secondBtn);
+            thirdOption = (Button) findViewById(R.id.thirdBtn);
+            fourthOption = (Button) findViewById(R.id.fourthBtn);
+            buttonBackGround = firstOption.getBackground();
 
-        newQuestion();
+            // SoundPool manager loader
+
+            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int sampleId,
+                                           int status) {
+                    loaded = true;
+                }
+            });
+            soundID = soundPool.load(this, R.raw.correct_answer, 1);
+            failureID = soundPool.load(this, R.raw.fail_answer, 1);
+
+            newQuestion();
+        }
+        else {
+            setContentView(R.layout.not_enough_words_in_db);
+
+            moveToAddWords = (Button) findViewById(R.id.saveWordsBtn);
+            mNotEnoughWords = (TextView) findViewById(R.id.notEnoughWords);
+            mNotEnoughWords.setText("For starting the game, you need to have at least 4 saved word pairs. Currently you have " + String.valueOf(dbHandler.getWordCount()) + " saved word pairs.");
+        }
     }
+
+    // Create options menu
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.settings_menu, menu);
+        return true;
+    }
+
+    // Create items selectable on items menu
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem){
+        int id = menuItem.getItemId();
+        if(id == R.id.settings_menu){
+            Intent startIntentActivity = new Intent(this, SettingsActivity.class);
+            startIntentActivity.putExtra("CLASS_INFORMATION", AddWord.class);
+            startActivity(startIntentActivity);
+            return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
 
     // Countdown timer for the progressBar
 
@@ -128,7 +167,8 @@ public class GameActivity extends AppCompatActivity {
             public void onFinish() {
 
                 playWrongAnswerSound();
-
+                mCountDownTimer.cancel();
+                wrongAnswer();
             }
         };
         mCountDownTimer.start();
@@ -475,6 +515,12 @@ public class GameActivity extends AppCompatActivity {
         mProgressBar.setVisibility(View.INVISIBLE);
 
 
+    }
+
+    public void saveWordsBtn(View view){
+
+        Intent i = new Intent(this, AddWord.class);
+        startActivity(i);
     }
 
 }

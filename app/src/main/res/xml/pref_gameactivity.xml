@@ -7,4 +7,13 @@
     android:summaryOff="Off"
     android:summaryOn="On"
     app:title="Play sounds"/>
+
+<ListPreference
+    android:defaultValue="@string/game_level_easy_value"
+    android:entries="@array/game_level_labels"
+    android:entryValues="@array/game_level_option_values"
+    android:key="@string/game_level_key"
+    android:title="Game level"/>
+
+
 </PreferenceScreen>

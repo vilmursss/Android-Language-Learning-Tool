@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="game_level_labels">
+        <item>@string/game_level_easy</item>
+        <item>@string/game_level_medium</item>
+        <item>@string/game_level_hard</item>
+    </array>
+    <array name="game_level_option_values">
+        <item>@string/game_level_easy_value</item>
+        <item>@string/game_level_medium_value</item>
+        <item>@string/game_level_hard_value</item>
+    </array>
+</resources>

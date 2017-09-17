@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">wordGameAndroid</string>
     <string name="play_sounds">play_sounds</string>
+    <string name="game_level_key">game_level</string>
+
+    <string name="game_level_easy">Easy</string>
+    <string name="game_level_medium">Medium</string>
+    <string name="game_level_hard">Hard</string>
+
+    <string name="game_level_easy_value" translatable="false">1</string>
+    <string name="game_level_medium_value" translatable="false">2</string>
+    <string name="game_level_hard_value" translatable="false">3</string>
 </resources>

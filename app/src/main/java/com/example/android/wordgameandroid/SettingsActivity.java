@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 public class SettingsActivity extends AppCompatActivity {
+
     Bundle extras;
     String getFirstWord;
     String getSecondWord;
@@ -16,23 +17,24 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         extras = getIntent().getExtras();
         navigateBackArrow();
 
-
-
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem){
+
         int id = menuItem.getItemId();
         Bundle extras = getIntent().getExtras();
         Class nextActivityClass = (Class<Activity>)extras.getSerializable("CLASS_INFORMATION");
         Intent intent = new Intent(SettingsActivity.this, nextActivityClass);
-        
+
         if(nextActivityClass == WordEdit.class){
+
             getFirstWord = getIntent().getExtras().getString("first_word_edit_extra");
             getSecondWord = getIntent().getExtras().getString("second_word_edit_extra");
             wordPairId = getIntent().getExtras().getString("id_edit_extra");

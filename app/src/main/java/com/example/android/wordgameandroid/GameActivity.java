@@ -12,11 +12,14 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
+import android.text.GetChars;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -79,6 +82,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     // Points
 
+    int gameLevel = 0;
     int gamePoints = 0;
 
     // Sound boolean
@@ -113,26 +117,31 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.settings_menu, menu);
         return true;
+
     }
 
     // Create items selectable on items menu
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem){
+
         int id = menuItem.getItemId();
         if(id == R.id.settings_menu){
             Intent startIntentActivity = new Intent(this, SettingsActivity.class);
             startIntentActivity.putExtra("CLASS_INFORMATION", GameActivity.class);
             startActivity(startIntentActivity);
+            mCountDownTimer.cancel();
             return true;
         }
 
         else {
             Intent goBackToMainActivity = new Intent(this, MainActivity.class);
             startActivity(goBackToMainActivity);
+            mCountDownTimer.cancel();
             return true;
         }
     }
@@ -141,6 +150,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     protected void onDestroy(){
+
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
@@ -149,6 +159,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // Navigation back arrow
 
     public void navigateBackArrow() {
+
         ActionBar actionBar = this.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -158,6 +169,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // SoundPool manager loader
 
     public void loadSoundPoolManager() {
+
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
@@ -174,9 +186,17 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // Create shared preferences
 
     public void sharedPreferences(){
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         playSounds(sharedPreferences.getBoolean(getString(R.string.play_sounds), getResources().getBoolean(R.bool.pref_sounds)));
+        loadGameLevel(sharedPreferences);
+    }
+
+    public void loadGameLevel(SharedPreferences sharedPreferences){
+
+        gameLevel = Integer.valueOf(sharedPreferences.getString(getString(R.string.game_level_key),
+                getString(R.string.game_level_easy_value)));
 
     }
 
@@ -209,9 +229,9 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
             @Override
             public void onTick(long millisUntilFinished) {
-                pbTimer++;
+                pbTimer = pbTimer+gameLevel;
 
-                if(pbTimer == mProgressBar.getMax()){
+                if(pbTimer >= mProgressBar.getMax()){
                     wrongAnswer();
                 }
 
@@ -472,7 +492,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     public void updateGamePoints(){
 
-        gamePoints = gamePoints+(1500/pbTimer);
+        gamePoints = gamePoints+(1500/pbTimer)*gameLevel;
         pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
 
     }
@@ -587,6 +607,9 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if(key.equals(getString(R.string.play_sounds))){
             playSounds(sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.pref_sounds)));
+        }
+        else if(key.equals(getString(R.string.game_level_key))){
+            loadGameLevel(sharedPreferences);
         }
     }
 }

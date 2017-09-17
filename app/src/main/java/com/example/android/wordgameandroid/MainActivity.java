@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         int id = menuItem.getItemId();
         if(id == R.id.settings_menu){
             Intent startIntentActivity = new Intent(this, SettingsActivity.class);
-            startIntentActivity.putExtra("CLASS_INFORMATION", AddWord.class);
+            startIntentActivity.putExtra("CLASS_INFORMATION", MainActivity.class);
             startActivity(startIntentActivity);
             return true;
         }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">wordGameAndroid</string>
+    <string name="play_sounds">play_sounds</string>
 </resources>

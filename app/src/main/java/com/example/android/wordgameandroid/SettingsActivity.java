@@ -10,17 +10,19 @@ import android.view.MenuItem;
 
 public class SettingsActivity extends AppCompatActivity {
     Bundle extras;
+    String getFirstWord;
+    String getSecondWord;
+    String wordPairId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         extras = getIntent().getExtras();
+        navigateBackArrow();
 
-        ActionBar actionBar = this.getSupportActionBar();
-        if(actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+
+
     }
 
     @Override
@@ -29,6 +31,16 @@ public class SettingsActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         Class nextActivityClass = (Class<Activity>)extras.getSerializable("CLASS_INFORMATION");
         Intent intent = new Intent(SettingsActivity.this, nextActivityClass);
+        
+        if(nextActivityClass == WordEdit.class){
+            getFirstWord = getIntent().getExtras().getString("first_word_edit_extra");
+            getSecondWord = getIntent().getExtras().getString("second_word_edit_extra");
+            wordPairId = getIntent().getExtras().getString("id_edit_extra");
+
+            intent.putExtra("first_word_edit_extra", getFirstWord);
+            intent.putExtra("second_word_edit_extra", getSecondWord);
+            intent.putExtra("id_edit_extra", wordPairId);
+        }
 
         if(id != android.R.id.home){
             NavUtils.navigateUpFromSameTask(this);
@@ -36,5 +48,12 @@ public class SettingsActivity extends AppCompatActivity {
             NavUtils.navigateUpTo(this, intent);
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    public void navigateBackArrow(){
+        ActionBar actionBar = this.getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }

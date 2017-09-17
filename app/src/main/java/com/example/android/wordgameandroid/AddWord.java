@@ -1,6 +1,7 @@
 package com.example.android.wordgameandroid;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,6 +20,8 @@ public class AddWord extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_word);
+
+        navigateBackArrow();
     }
 
     // Create options menu
@@ -41,9 +44,22 @@ public class AddWord extends AppCompatActivity {
             startActivity(startIntentActivity);
             return true;
         }
-        return super.onOptionsItemSelected(menuItem);
+        else {
+            Intent goBackToMainActivity = new Intent(this, MainActivity.class);
+            startActivity(goBackToMainActivity);
+            return true;
+        }
     }
 
+
+    // Navigation back arrow
+
+    public void navigateBackArrow() {
+        ActionBar actionBar = this.getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
 
     // Function for submit button click event, where checks that fields are not empty
 

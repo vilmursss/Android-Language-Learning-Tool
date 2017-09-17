@@ -3,6 +3,7 @@ package com.example.android.wordgameandroid;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -11,8 +12,11 @@ import android.media.SoundPool;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.preference.Preference;
+import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +32,7 @@ import org.w3c.dom.Text;
 import java.util.HashMap;
 import java.util.Random;
 
-public class GameActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     // SoundPool
 
@@ -77,6 +81,9 @@ public class GameActivity extends AppCompatActivity {
 
     int gamePoints = 0;
 
+    // Sound boolean
+
+    boolean playSounds = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,31 +94,11 @@ public class GameActivity extends AppCompatActivity {
 
             setContentView(R.layout.activity_game);
 
-            gameOverText = (TextView) findViewById(R.id.PickText);
-            translatableWord = (TextView) findViewById(R.id.roundWord);
-            pointsTextView = (TextView) findViewById(R.id.points);
-            pointsTextView.setText("Points: " + String.valueOf(gamePoints));
-
-            firstOption = (Button) findViewById(R.id.firstBtn);
-            secondOption = (Button) findViewById(R.id.secondBtn);
-            thirdOption = (Button) findViewById(R.id.thirdBtn);
-            fourthOption = (Button) findViewById(R.id.fourthBtn);
-            buttonBackGround = firstOption.getBackground();
-
-            // SoundPool manager loader
-
-            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-            soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete(SoundPool soundPool, int sampleId,
-                                           int status) {
-                    loaded = true;
-                }
-            });
-            soundID = soundPool.load(this, R.raw.correct_answer, 1);
-            failureID = soundPool.load(this, R.raw.fail_answer, 1);
-
+            loadContentObjects();
+            loadSoundPoolManager();
+            sharedPreferences();
             newQuestion();
+            navigateBackArrow();
         }
         else {
             setContentView(R.layout.not_enough_words_in_db);
@@ -138,11 +125,75 @@ public class GameActivity extends AppCompatActivity {
         int id = menuItem.getItemId();
         if(id == R.id.settings_menu){
             Intent startIntentActivity = new Intent(this, SettingsActivity.class);
-            startIntentActivity.putExtra("CLASS_INFORMATION", AddWord.class);
+            startIntentActivity.putExtra("CLASS_INFORMATION", GameActivity.class);
             startActivity(startIntentActivity);
             return true;
         }
-        return super.onOptionsItemSelected(menuItem);
+
+        else {
+            Intent goBackToMainActivity = new Intent(this, MainActivity.class);
+            startActivity(goBackToMainActivity);
+            return true;
+        }
+    }
+
+    // Destroy shared preferences listener
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this)
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    // Navigation back arrow
+
+    public void navigateBackArrow() {
+        ActionBar actionBar = this.getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    // SoundPool manager loader
+
+    public void loadSoundPoolManager() {
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId,
+                                       int status) {
+                loaded = true;
+            }
+        });
+        soundID = soundPool.load(this, R.raw.correct_answer, 1);
+        failureID = soundPool.load(this, R.raw.fail_answer, 1);
+
+    }
+
+    // Create shared preferences
+
+    public void sharedPreferences(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        playSounds(sharedPreferences.getBoolean(getString(R.string.play_sounds), getResources().getBoolean(R.bool.pref_sounds)));
+
+    }
+
+    // Load buttons and textviews
+
+    public void loadContentObjects(){
+
+        gameOverText = (TextView) findViewById(R.id.PickText);
+        translatableWord = (TextView) findViewById(R.id.roundWord);
+        pointsTextView = (TextView) findViewById(R.id.points);
+        pointsTextView.setText("Points: " + String.valueOf(gamePoints));
+
+        firstOption = (Button) findViewById(R.id.firstBtn);
+        secondOption = (Button) findViewById(R.id.secondBtn);
+        thirdOption = (Button) findViewById(R.id.thirdBtn);
+        fourthOption = (Button) findViewById(R.id.fourthBtn);
+        buttonBackGround = firstOption.getBackground();
     }
 
 
@@ -154,21 +205,22 @@ public class GameActivity extends AppCompatActivity {
 
         mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
         mProgressBar.setProgress(pbTimer);
-        mCountDownTimer=new CountDownTimer(10700,50) {
+        mCountDownTimer=new CountDownTimer(100000,50) {
 
             @Override
             public void onTick(long millisUntilFinished) {
                 pbTimer++;
+
+                if(pbTimer == mProgressBar.getMax()){
+                    wrongAnswer();
+                }
+
                 mProgressBar.setProgress((int)pbTimer);
 
             }
 
             @Override
             public void onFinish() {
-
-                playWrongAnswerSound();
-                mCountDownTimer.cancel();
-                wrongAnswer();
             }
         };
         mCountDownTimer.start();
@@ -190,6 +242,7 @@ public class GameActivity extends AppCompatActivity {
                     correctAnswer = 1;
                     setCorrectWord();
                     fillOtherButtons();
+
                     progressBarCountDown();
                     break;
                 case 2:
@@ -322,7 +375,7 @@ public class GameActivity extends AppCompatActivity {
                 .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         float volume = actualVolume / maxVolume;
 
-        if (loaded) {
+        if (loaded && playSounds) {
             soundPool.play(soundID, volume, volume, 1, 0, 1f);
         }
     }
@@ -337,7 +390,7 @@ public class GameActivity extends AppCompatActivity {
                 .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         float volume = actualVolume / maxVolume;
 
-        if (loaded) {
+        if (loaded && playSounds) {
             soundPool.play(failureID, volume, volume, 1, 0, 1f);
         }
     }
@@ -435,7 +488,6 @@ public class GameActivity extends AppCompatActivity {
             mCountDownTimer.cancel();
             waitTwoSecTimer();
         } else {
-            playWrongAnswerSound();
             firstOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
@@ -446,13 +498,13 @@ public class GameActivity extends AppCompatActivity {
     public void secondBtnClick(View view) {
 
         if (correctAnswer == 2) {
+
             playCorrectAnswerSound();
             secondOption.setBackgroundColor(Color.GREEN);
             updateGamePoints();
             mCountDownTimer.cancel();
             waitTwoSecTimer();
         } else {
-            playWrongAnswerSound();
             secondOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
@@ -469,7 +521,6 @@ public class GameActivity extends AppCompatActivity {
             mCountDownTimer.cancel();
             waitTwoSecTimer();
         } else {
-            playWrongAnswerSound();
             thirdOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
@@ -487,7 +538,6 @@ public class GameActivity extends AppCompatActivity {
             waitTwoSecTimer();
 
         } else {
-            playWrongAnswerSound();
             fourthOption.setBackgroundColor(Color.RED);
             wrongAnswer();
         }
@@ -496,9 +546,15 @@ public class GameActivity extends AppCompatActivity {
     // Function for wrong answer
 
     public void wrongAnswer(){
+        playWrongAnswerSound();
         hideAllButtons();
         mCountDownTimer.cancel();
-        gameOverText.setText("Wrong answer :(");
+        if(pbTimer == mProgressBar.getMax()){
+            gameOverText.setText("Time ran out :(");
+        }
+        else {
+            gameOverText.setText("Wrong answer :(");
+        }
         translatableWord.setTextSize(20);
         translatableWord.setText("You got " + gamePoints + " points \n" + "Do you wanna save this result? ");
     }
@@ -523,4 +579,14 @@ public class GameActivity extends AppCompatActivity {
         startActivity(i);
     }
 
+    public void playSounds(boolean soundOrNot){
+    playSounds = soundOrNot;
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if(key.equals(getString(R.string.play_sounds))){
+            playSounds(sharedPreferences.getBoolean(key, getResources().getBoolean(R.bool.pref_sounds)));
+        }
+    }
 }

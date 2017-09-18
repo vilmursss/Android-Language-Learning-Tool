@@ -70,7 +70,6 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // Data structure for already played words and other helping variables
 
     HashMap<String, String> playedWordsHashMap = new HashMap<String, String>();
-    int playedWordsCount = 0;
     int correctAnswer = 0;
     String roundCorrectWord = "";
 
@@ -80,10 +79,12 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     CountDownTimer mCountDownTimer;
     int pbTimer = 0;
 
-    // Points
+    // Points, level & game-mode
 
     int gameLevel = 0;
     int gamePoints = 0;
+    boolean gameStopped = false;
+
 
     // Sound boolean
 
@@ -97,12 +98,28 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         if(dbHandler.getWordCount() >= 4) {
 
             setContentView(R.layout.activity_game);
-
             loadContentObjects();
             loadSoundPoolManager();
             sharedPreferences();
-            newQuestion();
             navigateBackArrow();
+
+            if(getIntent().getExtras()!=null){
+
+                gamePoints = getIntent().getExtras().getInt("points");
+                pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
+                gameStopped = getIntent().getExtras().getBoolean("game_stopped");
+                playedWordsHashMap = (HashMap<String, String>) getIntent().getExtras().getSerializable("played_words_map");
+
+
+            }
+            if(gameStopped){
+                Log.d("myTag", "WE GOT HERE ");
+                wrongAnswer();
+            }
+            if(!gameStopped) {
+                newQuestion();
+            }
+
         }
         else {
             setContentView(R.layout.not_enough_words_in_db);
@@ -131,17 +148,22 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
         int id = menuItem.getItemId();
         if(id == R.id.settings_menu){
+            mCountDownTimer.cancel();
             Intent startIntentActivity = new Intent(this, SettingsActivity.class);
             startIntentActivity.putExtra("CLASS_INFORMATION", GameActivity.class);
+            startIntentActivity.putExtra("points", gamePoints);
+            startIntentActivity.putExtra("played_words_map", playedWordsHashMap);
+            startIntentActivity.putExtra("game_stopped", gameStopped);
             startActivity(startIntentActivity);
-            mCountDownTimer.cancel();
             return true;
         }
 
         else {
             Intent goBackToMainActivity = new Intent(this, MainActivity.class);
             startActivity(goBackToMainActivity);
-            mCountDownTimer.cancel();
+            if(!gameStopped) {
+                mCountDownTimer.cancel();
+            }
             return true;
         }
     }
@@ -214,6 +236,8 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         thirdOption = (Button) findViewById(R.id.thirdBtn);
         fourthOption = (Button) findViewById(R.id.fourthBtn);
         buttonBackGround = firstOption.getBackground();
+
+        mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
     }
 
 
@@ -223,7 +247,6 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
         pbTimer = 0;
 
-        mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
         mProgressBar.setProgress(pbTimer);
         mCountDownTimer=new CountDownTimer(100000,50) {
 
@@ -249,6 +272,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // Give new question
 
     public void newQuestion() {
+        gameStopped = false;
 
         if (gameEnd()) {
             translatableWord.setText("All words played");
@@ -429,7 +453,6 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
             else {
                 playedWordsHashMap.put(randWord.getSecondWord(), randWord.getSecondWord());
                 translatableWord.setText(randWord.getSecondWord());
-                playedWordsCount++;
                 check = true;
 
                 roundCorrectWord = randWord.getFirstWord();
@@ -452,7 +475,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     public boolean gameEnd() {
 
-        if (playedWordsCount == dbHandler.getWordCount()) {
+        if (playedWordsHashMap.size() == dbHandler.getWordCount()) {
             return true;
         }
         return false;
@@ -566,17 +589,24 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // Function for wrong answer
 
     public void wrongAnswer(){
-        playWrongAnswerSound();
+
+        if(!gameStopped) {
+            playWrongAnswerSound();
+            mCountDownTimer.cancel();
+
+            if(pbTimer == mProgressBar.getMax()){
+                gameOverText.setText("Time ran out :(");
+            }
+            else {
+                gameOverText.setText("Wrong answer :(");
+            }
+            translatableWord.setTextSize(20);
+            translatableWord.setText("You got " + gamePoints + " points \n" + "Do you wanna save this result? ");
+        }
+
+        gameStopped = true;
         hideAllButtons();
-        mCountDownTimer.cancel();
-        if(pbTimer == mProgressBar.getMax()){
-            gameOverText.setText("Time ran out :(");
-        }
-        else {
-            gameOverText.setText("Wrong answer :(");
-        }
-        translatableWord.setTextSize(20);
-        translatableWord.setText("You got " + gamePoints + " points \n" + "Do you wanna save this result? ");
+
     }
 
     // Hide all buttons

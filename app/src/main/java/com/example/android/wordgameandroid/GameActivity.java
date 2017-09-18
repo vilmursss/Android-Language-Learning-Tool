@@ -631,18 +631,21 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     }
 
     public void reLoadGame(){
+
         firstOption.setVisibility(View.VISIBLE);
         secondOption.setVisibility(View.VISIBLE);
         thirdOption.setVisibility(View.VISIBLE);
         fourthOption.setVisibility(View.VISIBLE);
         loadNewGame.setVisibility(View.INVISIBLE);
         setAllBackToDefault();
+
         gamePoints = 0;
         playedWordsHashMap.clear();
 
         mProgressBar.setVisibility(View.VISIBLE);
         gameOverText.setText("Pick correct translation for word ");
         pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
+
         newQuestion();
     }
 

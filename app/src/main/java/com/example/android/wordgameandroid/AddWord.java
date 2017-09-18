@@ -8,13 +8,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class AddWord extends AppCompatActivity {
 
     EditText firstWord;
     EditText secondWord;
+    EditText wordList;
+    Spinner listSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +78,12 @@ public class AddWord extends AppCompatActivity {
 
         firstWord = (EditText) findViewById(R.id.firstWord);
         secondWord = (EditText) findViewById(R.id.secondWord);
+        wordList = (EditText) findViewById(R.id.addWordList);
+        listSpinner = (Spinner) findViewById(R.id.addListSpinner);
 
         String firstWordToString = firstWord.getText().toString();
         String secondWordToString = secondWord.getText().toString();
+        String wordListToString = wordList.getText().toString();
 
         if(firstWordToString.length() < 1){
             firstWord.setError("This field can not be blank");
@@ -85,12 +94,14 @@ public class AddWord extends AppCompatActivity {
         }
 
         else {
-            dbHandler.addWord(new Word(id, firstWordToString, secondWordToString));
+            dbHandler.addWord(new Word(id, firstWordToString, secondWordToString, wordListToString));
 
             Toast.makeText(this, "Word pair saved!", Toast.LENGTH_SHORT).show();
 
             firstWord.setText("");
             secondWord.setText("");
+            wordList.setText("");
+
         }
 
     }

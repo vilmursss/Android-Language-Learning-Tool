@@ -51,4 +51,28 @@
         android:text="Edit"
         android:textColor="#0099CC"
         android:layout_alignParentRight="true" />
+
+    <TextView
+        android:id="@+id/word_list_text"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:paddingTop="30sp"
+        android:text="Word list: " />
+    <TextView
+        android:id="@+id/word_list"
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="monospace"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:paddingTop="30sp"
+        android:paddingLeft="10sp"
+        android:layout_toRightOf="@id/word_list_text"
+        tools:text="Word list" />
+
 </RelativeLayout>

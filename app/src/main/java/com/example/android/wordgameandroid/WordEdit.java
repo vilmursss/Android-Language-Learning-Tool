@@ -14,6 +14,7 @@ public class WordEdit extends AppCompatActivity {
 
     EditText firstWord;
     EditText secondWord;
+    EditText wordList;
     String wordPairId;
 
     @Override
@@ -25,6 +26,7 @@ public class WordEdit extends AppCompatActivity {
 
         String getFirstWord = getIntent().getExtras().getString("first_word_edit_extra");
         String getSecondWord = getIntent().getExtras().getString("second_word_edit_extra");
+        String getWordList = getIntent().getExtras().getString("word_list");
         wordPairId = getIntent().getExtras().getString("id_edit_extra");
 
         firstWord = (EditText) findViewById(R.id.firstWordEdit);
@@ -32,6 +34,9 @@ public class WordEdit extends AppCompatActivity {
 
         secondWord = (EditText) findViewById(R.id.secondWordEdit);
         secondWord.setText(getSecondWord);
+
+        wordList = (EditText) findViewById(R.id.editWordList);
+        wordList.setText(getWordList);
 
         navigateBackArrow();
     }
@@ -83,8 +88,9 @@ public class WordEdit extends AppCompatActivity {
 
         String getFirstWordText = firstWord.getText().toString();
         String getSecondWordText = secondWord.getText().toString();
+        String getWordListText = wordList.getText().toString();
 
-       dbHandler.updateWordPair(wordPairId,getFirstWordText,getSecondWordText);
+       dbHandler.updateWordPair(wordPairId,getFirstWordText,getSecondWordText, getWordListText);
     }
 
     // Delete word pair click event option

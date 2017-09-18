@@ -92,7 +92,7 @@ public class ModifyWords extends AppCompatActivity {
 
             if (checkId.equals("0")) {
                 String errorText = "No words found!";
-                Word addWordObject = new Word(0, errorText, "");
+                Word addWordObject = new Word(0, errorText, "", "");
                 wordPairArray.add(addWordObject);
                 listAdapter = new ListAdapter(ModifyWords.this, R.layout.wordpair_nofound,
                         wordPairArray);
@@ -106,7 +106,7 @@ public class ModifyWords extends AppCompatActivity {
 
             else {
                 for (Word wordPairObject : wordObject) {
-                    Word addWordObject = new Word(wordPairObject.getId(), wordPairObject.getFirstWord(), wordPairObject.getSecondWord());
+                    Word addWordObject = new Word(wordPairObject.getId(), wordPairObject.getFirstWord(), wordPairObject.getSecondWord(), wordPairObject.getWordList());
                     wordPairArray.add(addWordObject);
                     listAdapter = new ListAdapter(ModifyWords.this, R.layout.wordpair_listrow,
                             wordPairArray);

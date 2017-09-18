@@ -7,6 +7,7 @@ import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,13 +15,14 @@ import java.util.Random;
 
 public class DbHandler extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
     private static final String DATABASE_NAME = "wordBase";
     private static final String WORD_TABLE = "words";
 
     private static final String ID = "id";
     private static final String FIRST_WORD = "firstWord";
     private static final String SECOND_WORD = "secondWord";
+    private static final String WORD_LIST = "wordList";
 
     public DbHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,7 +32,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String CREATE_TABLE = "CREATE TABLE " + WORD_TABLE + "("
                 + ID + " INTEGER PRIMARY KEY," + FIRST_WORD + " TEXT,"
-                + SECOND_WORD + " TEXT" + ")";
+                + SECOND_WORD + " TEXT," + WORD_LIST + " TEXT" + ")";
         db.execSQL(CREATE_TABLE);
     }
 
@@ -48,6 +50,12 @@ public class DbHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(FIRST_WORD, word.getFirstWord());
         values.put(SECOND_WORD, word.getSecondWord());
+        values.put(WORD_LIST, word.getWordList());
+
+        Log.d("myTag", word.getFirstWord());
+        Log.d("myTag", word.getSecondWord());
+        Log.d("myTag", word.getWordList());
+
 
         db.insert(WORD_TABLE, null, values);
         db.close();
@@ -79,10 +87,10 @@ public class DbHandler extends SQLiteOpenHelper {
 
     // Update word pair values
 
-    public void updateWordPair(String id, String firstWord, String secondWord){
+    public void updateWordPair(String id, String firstWord, String secondWord, String wordList){
         SQLiteDatabase db = this.getReadableDatabase();
         String updateQuery = "UPDATE " + WORD_TABLE + " SET " + FIRST_WORD + " = '" + firstWord + "', " + SECOND_WORD
-                + " = '" + secondWord + "' WHERE " + ID + " = " + id;
+                + " = '" + secondWord + "', " + WORD_LIST + " = '" + wordList  +"' WHERE " + ID + " = " + id;
         db.execSQL(updateQuery);
         db.close();
     }
@@ -113,7 +121,7 @@ public class DbHandler extends SQLiteOpenHelper {
     public Word getRandomWord(){
 
         if(getWordCount() < 1){
-            Word returnWordObject = new Word(0, "No words in DB", "");
+            Word returnWordObject = new Word(0, "No words in DB", "", "");
 
             return returnWordObject;
         }
@@ -137,6 +145,20 @@ public class DbHandler extends SQLiteOpenHelper {
         return returnWordObject;
     }
 
+    public ArrayList<String> getLists(){
+        ArrayList<String> allLists = new ArrayList<String>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery ="SELECT * FROM" + WORD_TABLE;
+        Cursor query = db.rawQuery(selectQuery, null);
+
+                if(query.moveToFirst()){
+                    allLists.add(query.getString(3));
+                }
+
+        return allLists;
+    }
+
     // Return all word pairs based on search string
 
     public List<Word> getWord(String word) {
@@ -154,6 +176,7 @@ public class DbHandler extends SQLiteOpenHelper {
                 wordPair.setId(Integer.parseInt(query.getString(0)));
                 wordPair.setFirstWord(query.getString(1));
                 wordPair.setSecondWord(query.getString(2));
+                wordPair.setWordList(query.getString(3));
                 wordList.add(wordPair);
 
             } while (query.moveToNext());
@@ -162,6 +185,7 @@ public class DbHandler extends SQLiteOpenHelper {
             wordPair.setId(0);
             wordPair.setFirstWord("");
             wordPair.setSecondWord("");
+            wordPair.setWordList("");
             wordList.add(wordPair);
         }
         return wordList;

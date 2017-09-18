@@ -41,6 +41,7 @@ public class ListAdapter extends ArrayAdapter<Word> {
             holder = new CustomerHolder();
             holder.firstWord = (TextView) row.findViewById(R.id.first_word);
             holder.secondWord = (TextView) row.findViewById(R.id.second_word);
+            holder.wordList = (TextView) row.findViewById(R.id.word_list);
             holder.btnEdit = (Button) row.findViewById(R.id.edit_button);
             row.setTag(holder);
 
@@ -52,10 +53,12 @@ public class ListAdapter extends ArrayAdapter<Word> {
         Word wordObject = data.get(position);
         holder.firstWord.setText(wordObject.getFirstWord());
         holder.secondWord.setText(wordObject.getSecondWord());
+        holder.wordList.setText(wordObject.getWordList());
 
         final String btnSendId = String.valueOf(wordObject.getId());
         final String btnSendFirstWord = wordObject.getFirstWord();
         final String btnSendSecondWord = wordObject.getSecondWord();
+        final String btnSendWordList = wordObject.getWordList();
 
         // Edit button, take list item details and open new activity
 
@@ -67,6 +70,7 @@ public class ListAdapter extends ArrayAdapter<Word> {
                 intent.putExtra("id_edit_extra", btnSendId);
                 intent.putExtra("first_word_edit_extra", btnSendFirstWord);
                 intent.putExtra("second_word_edit_extra", btnSendSecondWord);
+                intent.putExtra("word_list", btnSendWordList);
                 context.startActivity(intent);
             }
         });
@@ -81,6 +85,7 @@ public class ListAdapter extends ArrayAdapter<Word> {
 
         TextView firstWord;
         TextView secondWord;
+        TextView wordList;
         Button btnEdit;
 
     }

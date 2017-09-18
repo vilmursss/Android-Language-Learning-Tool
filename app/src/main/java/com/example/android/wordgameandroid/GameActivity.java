@@ -62,6 +62,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     Button thirdOption;
     Button fourthOption;
     Button moveToAddWords;
+    Button loadNewGame;
 
     // DbHandler
 
@@ -79,7 +80,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     CountDownTimer mCountDownTimer;
     int pbTimer = 0;
 
-    // Points, level & game-mode
+    // Points, level & game status
 
     int gameLevel = 0;
     int gamePoints = 0;
@@ -238,6 +239,8 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         secondOption = (Button) findViewById(R.id.secondBtn);
         thirdOption = (Button) findViewById(R.id.thirdBtn);
         fourthOption = (Button) findViewById(R.id.fourthBtn);
+        loadNewGame = (Button) findViewById(R.id.restartGame);
+        loadNewGame.setVisibility(View.INVISIBLE);
         buttonBackGround = firstOption.getBackground();
 
         mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
@@ -620,10 +623,31 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         secondOption.setVisibility(View.INVISIBLE);
         thirdOption.setVisibility(View.INVISIBLE);
         fourthOption.setVisibility(View.INVISIBLE);
+        loadNewGame.setVisibility(View.VISIBLE);
 
         mProgressBar.setVisibility(View.INVISIBLE);
 
 
+    }
+
+    public void reLoadGame(){
+        firstOption.setVisibility(View.VISIBLE);
+        secondOption.setVisibility(View.VISIBLE);
+        thirdOption.setVisibility(View.VISIBLE);
+        fourthOption.setVisibility(View.VISIBLE);
+        loadNewGame.setVisibility(View.INVISIBLE);
+        setAllBackToDefault();
+        gamePoints = 0;
+        playedWordsHashMap.clear();
+
+        mProgressBar.setVisibility(View.VISIBLE);
+        gameOverText.setText("Pick correct translation for word ");
+        pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
+        newQuestion();
+    }
+
+    public void restartGameBtn(View view){
+        reLoadGame();
     }
 
     public void saveWordsBtn(View view){

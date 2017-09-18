@@ -25,7 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     HashMap<String, String> playedWordsHashMap = new HashMap<String, String>();
     boolean gameStopped;
-    boolean receivedValues;
+    String upperText;
     int points;
 
     @Override
@@ -62,10 +62,13 @@ public class SettingsActivity extends AppCompatActivity {
             points = getIntent().getExtras().getInt("points");
             gameStopped = getIntent().getExtras().getBoolean("game_stopped");
             playedWordsHashMap = (HashMap<String, String>) getIntent().getExtras().getSerializable("played_words_map");
+            upperText = getIntent().getExtras().getString("upper_text");
 
             intent.putExtra("points", points);
             intent.putExtra("game_stopped", gameStopped);
             intent.putExtra("played_words_map", playedWordsHashMap);
+            intent.putExtra("upper_text", upperText);
+
 
         }
 

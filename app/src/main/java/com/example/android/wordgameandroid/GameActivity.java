@@ -109,12 +109,14 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
                 pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
                 gameStopped = getIntent().getExtras().getBoolean("game_stopped");
                 playedWordsHashMap = (HashMap<String, String>) getIntent().getExtras().getSerializable("played_words_map");
+                String getUpperText = getIntent().getExtras().getString("upper_text");
+                gameOverText.setText(getUpperText);
 
 
             }
             if(gameStopped){
-                Log.d("myTag", "WE GOT HERE ");
                 wrongAnswer();
+
             }
             if(!gameStopped) {
                 newQuestion();
@@ -154,6 +156,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
             startIntentActivity.putExtra("points", gamePoints);
             startIntentActivity.putExtra("played_words_map", playedWordsHashMap);
             startIntentActivity.putExtra("game_stopped", gameStopped);
+            startIntentActivity.putExtra("upper_text", gameOverText.getText().toString());
             startActivity(startIntentActivity);
             return true;
         }
@@ -600,12 +603,12 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
             else {
                 gameOverText.setText("Wrong answer :(");
             }
-            translatableWord.setTextSize(20);
-            translatableWord.setText("You got " + gamePoints + " points \n" + "Do you wanna save this result? ");
         }
 
         gameStopped = true;
         hideAllButtons();
+        translatableWord.setTextSize(20);
+        translatableWord.setText("You got " + gamePoints + " points \n" + "Do you wanna save this result? ");
 
     }
 

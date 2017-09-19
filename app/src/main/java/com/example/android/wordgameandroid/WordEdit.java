@@ -8,14 +8,23 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
+
+import java.util.ArrayList;
 
 public class WordEdit extends AppCompatActivity {
 
     EditText firstWord;
     EditText secondWord;
     EditText wordList;
+    String currentWordList;
     String wordPairId;
+
+    DbHandler dbHandler = new DbHandler(this);
+    private Spinner sItems;
+    ArrayList<String> spinnerArray =  new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +47,9 @@ public class WordEdit extends AppCompatActivity {
         wordList = (EditText) findViewById(R.id.editWordList);
         wordList.setText(getWordList);
 
+        currentWordList = getWordList;
+
+        addSpinnerValues();
         navigateBackArrow();
     }
 
@@ -69,6 +81,30 @@ public class WordEdit extends AppCompatActivity {
             startActivity(goBackToModifyWordsActivity);
             return true;
         }
+    }
+
+    public void addSpinnerValues() {
+
+        if(dbHandler.getWordCount() < 1){
+            spinnerArray.add("Default List");
+        }
+        else {
+            if(dbHandler.getAllBesidesCurrentList(currentWordList) == null){
+                spinnerArray.add(currentWordList);
+            }
+            else {
+                spinnerArray = dbHandler.getAllBesidesCurrentList(currentWordList);
+                spinnerArray.add(currentWordList);
+            }
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, spinnerArray);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sItems = (Spinner) findViewById(R.id.changeWordPairList);
+        sItems.setAdapter(adapter);
+        sItems.setSelection(spinnerArray.size()-1);
     }
 
 

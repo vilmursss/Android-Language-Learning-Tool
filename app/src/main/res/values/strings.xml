@@ -10,4 +10,11 @@
     <string name="game_level_easy_value" translatable="false">1</string>
     <string name="game_level_medium_value" translatable="false">2</string>
     <string name="game_level_hard_value" translatable="false">3</string>
+
+    <string name="list_prompt">Choose a list</string>
+
+    <string-array name="lists_array">
+        <item>Default list</item>
+    </string-array>
+
 </resources>

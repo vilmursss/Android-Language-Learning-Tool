@@ -8,8 +8,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -25,6 +27,9 @@ public class ModifyWords extends AppCompatActivity {
     ListView wordPairList;
     ListAdapter listAdapter;
 
+    private Spinner sItems;
+    ArrayList<String> spinnerArray =  new ArrayList<String>();
+    DbHandler dbHandler = new DbHandler(this);
     ArrayList<Word> wordPairArray = new ArrayList<Word>();
 
     @Override
@@ -33,6 +38,7 @@ public class ModifyWords extends AppCompatActivity {
         setContentView(R.layout.activity_modify_words);
         searchResults = (TextView) findViewById(R.id.searchResultsTextView);
         searchResults.setVisibility(View.INVISIBLE);
+        addSpinnerValues();
         navigateBackArrow();
     }
 
@@ -63,6 +69,27 @@ public class ModifyWords extends AppCompatActivity {
         }
     }
 
+    public void addSpinnerValues() {
+
+        if(dbHandler.getWordCount() < 1){
+            spinnerArray.add("No lists created");
+        }
+        else {
+
+            spinnerArray = dbHandler.getLists();
+            spinnerArray.add("Or search all words from the list");
+
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, spinnerArray);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sItems = (Spinner) findViewById(R.id.searchSpinner);
+        sItems.setAdapter(adapter);
+        sItems.setSelection(spinnerArray.size()-1);
+    }
+
     // Navigation back arrow
 
     public void navigateBackArrow() {
@@ -81,12 +108,41 @@ public class ModifyWords extends AppCompatActivity {
         searchKey = (EditText) findViewById(R.id.searchWord);
         String dbSearchString = searchKey.getText().toString();
 
-        if (dbSearchString.length() < 1) {
+        if (sItems.getSelectedItemId() != spinnerArray.size()-1){
+
+            final List<Word> wordObject = dbHandler.getWordsByList(sItems.getSelectedItem().toString());
+            String checkId = String.valueOf(wordObject.get(0).getId());
+            if (checkId.equals("0")) {
+                String errorText = "No words found!";
+                Word addWordObject = new Word(0, errorText, "", "");
+                wordPairArray.add(addWordObject);
+                listAdapter = new ListAdapter(ModifyWords.this, R.layout.wordpair_nofound,
+                        wordPairArray);
+
+                wordPairList = (ListView) findViewById(R.id.listView);
+                wordPairList.setItemsCanFocus(false);
+                wordPairList.setAdapter(listAdapter);
+            }
+
+            // If word pairs found, then show them on a list
+
+            else {
+                for (Word wordPairObject : wordObject) {
+                    Word addWordObject = new Word(wordPairObject.getId(), wordPairObject.getFirstWord(), wordPairObject.getSecondWord(), wordPairObject.getWordList());
+                    wordPairArray.add(addWordObject);
+                    listAdapter = new ListAdapter(ModifyWords.this, R.layout.wordpair_listrow,
+                            wordPairArray);
+
+                    wordPairList = (ListView) findViewById(R.id.listView);
+                    wordPairList.setItemsCanFocus(false);
+                    wordPairList.setAdapter(listAdapter);
+                }
+            }
+        }
+        else if (dbSearchString.length() < 1) {
             searchKey.setError("This field can not be blank");
         } else {
 
-
-            DbHandler dbHandler = new DbHandler(this);
             final List<Word> wordObject = dbHandler.getWord(dbSearchString);
             String checkId = String.valueOf(wordObject.get(0).getId());
 

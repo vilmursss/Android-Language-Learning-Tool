@@ -10,7 +10,9 @@ import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class DbHandler extends SQLiteOpenHelper {
@@ -148,16 +150,83 @@ public class DbHandler extends SQLiteOpenHelper {
     public ArrayList<String> getLists(){
         ArrayList<String> allLists = new ArrayList<String>();
         SQLiteDatabase db = this.getReadableDatabase();
+        Map<String, String> alreadyFound = new HashMap<String, String>();
 
-        String selectQuery ="SELECT * FROM" + WORD_TABLE;
+        String selectQuery ="SELECT * FROM " + WORD_TABLE;
         Cursor query = db.rawQuery(selectQuery, null);
 
                 if(query.moveToFirst()){
-                    allLists.add(query.getString(3));
+                    do {
+                        String value = alreadyFound.get(query.getString(3));
+                        if (value != null) {
+                        } else {
+                            alreadyFound.put(query.getString(3), query.getString(3));
+                            allLists.add(query.getString(3));
+                        }
+                    } while (query.moveToNext());
                 }
 
         return allLists;
     }
+
+    public ArrayList<String> getAllBesidesCurrentList(String currentList){
+        ArrayList<String> allLists = new ArrayList<String>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Map<String, String> alreadyFound = new HashMap<String, String>();
+        alreadyFound.put(currentList, currentList);
+
+        String selectQuery ="SELECT * FROM " + WORD_TABLE;
+        Cursor query = db.rawQuery(selectQuery, null);
+
+        if(query.moveToFirst()){
+            do {
+                String value = alreadyFound.get(query.getString(3));
+                if (value != null) {
+                } else {
+                    alreadyFound.put(query.getString(3), query.getString(3));
+                    allLists.add(query.getString(3));
+                }
+            } while (query.moveToNext());
+        }
+
+        if(allLists.size() == 0){
+            return null;
+        }
+
+        return allLists;
+    }
+
+    public List<Word> getWordsByList(String list){
+
+        List<Word> wordList = new ArrayList<Word>();
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String WHERE = "" + WORD_LIST + " = '" + list +"'";
+        String selectQuery = "SELECT * FROM " + WORD_TABLE + " WHERE " + WHERE;
+        Cursor query = db.rawQuery(selectQuery, null);
+
+        if (query.moveToFirst()) {
+            do {
+                    Word wordPair = new Word();
+                    wordPair.setId(Integer.parseInt(query.getString(0)));
+                    wordPair.setFirstWord(query.getString(1));
+                    wordPair.setSecondWord(query.getString(2));
+                    wordPair.setWordList(query.getString(3));
+                    wordList.add(wordPair);
+
+            } while (query.moveToNext());
+        } else {
+            Word wordPair = new Word();
+            wordPair.setId(0);
+            wordPair.setFirstWord("");
+            wordPair.setSecondWord("");
+            wordPair.setWordList("");
+            wordList.add(wordPair);
+        }
+        return wordList;
+
+    }
+
 
     // Return all word pairs based on search string
 

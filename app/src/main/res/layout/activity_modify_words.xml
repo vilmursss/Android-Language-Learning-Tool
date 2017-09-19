@@ -14,7 +14,7 @@
         android:layout_width="170dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:hint="Search word"
+        android:hint="Search by word"
         android:inputType="textPersonName" />
 
     <Button
@@ -26,12 +26,19 @@
         android:onClick="searchBtn"
         android:text="Search" />
 
+    <Spinner
+        android:id="@+id/searchSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/searchWord"/>
 
         <TextView
             android:id="@+id/searchResultsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/searchWord"
+            android:layout_below="@id/searchSpinner"
             android:layout_marginTop="5dp"
             android:layout_centerHorizontal="true"
             android:text="Search results"

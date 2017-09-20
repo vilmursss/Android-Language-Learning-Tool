@@ -27,6 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
     boolean gameStopped;
     String upperText;
     int points;
+    String currentWordList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +64,13 @@ public class SettingsActivity extends AppCompatActivity {
             gameStopped = getIntent().getExtras().getBoolean("game_stopped");
             playedWordsHashMap = (HashMap<String, String>) getIntent().getExtras().getSerializable("played_words_map");
             upperText = getIntent().getExtras().getString("upper_text");
+            currentWordList = getIntent().getExtras().getString("current_list");
 
             intent.putExtra("points", points);
             intent.putExtra("game_stopped", gameStopped);
             intent.putExtra("played_words_map", playedWordsHashMap);
             intent.putExtra("upper_text", upperText);
+            intent.putExtra("current_list", currentWordList);
 
 
         }

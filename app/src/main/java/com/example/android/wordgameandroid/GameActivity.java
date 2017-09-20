@@ -26,12 +26,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -80,12 +83,17 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     CountDownTimer mCountDownTimer;
     int pbTimer = 0;
 
+    // Spinner
+
+    private Spinner sItems;
+    ArrayList<String> spinnerArray =  new ArrayList<String>();
+
     // Points, level & game status
 
     int gameLevel = 0;
     int gamePoints = 0;
-    boolean gameStopped = false;
-
+    boolean gameStopped = true;
+    String currentWordList = "";
 
     // Sound boolean
 
@@ -95,8 +103,6 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        if(dbHandler.getWordCount() >= 4) {
 
             setContentView(R.layout.activity_game);
             loadContentObjects();
@@ -112,25 +118,20 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
                 playedWordsHashMap = (HashMap<String, String>) getIntent().getExtras().getSerializable("played_words_map");
                 String getUpperText = getIntent().getExtras().getString("upper_text");
                 gameOverText.setText(getUpperText);
-
+                currentWordList = getIntent().getExtras().getString("current_list");
 
             }
-            if(gameStopped){
+            if(gameStopped && playedWordsHashMap.size() >= 1){
                 wrongAnswer();
 
             }
+            if(gameStopped){
+                startGame();
+            }
             if(!gameStopped) {
                 newQuestion();
+                sItems.setVisibility(View.INVISIBLE);
             }
-
-        }
-        else {
-            setContentView(R.layout.not_enough_words_in_db);
-
-            moveToAddWords = (Button) findViewById(R.id.saveWordsBtn);
-            mNotEnoughWords = (TextView) findViewById(R.id.notEnoughWords);
-            mNotEnoughWords.setText("For starting the game, you need to have at least 4 saved word pairs. Currently you have " + String.valueOf(dbHandler.getWordCount()) + " saved word pairs.");
-        }
     }
 
     // Create options menu
@@ -151,13 +152,16 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
         int id = menuItem.getItemId();
         if(id == R.id.settings_menu){
-            mCountDownTimer.cancel();
+            if(!gameStopped) {
+                mCountDownTimer.cancel();
+            }
             Intent startIntentActivity = new Intent(this, SettingsActivity.class);
             startIntentActivity.putExtra("CLASS_INFORMATION", GameActivity.class);
             startIntentActivity.putExtra("points", gamePoints);
             startIntentActivity.putExtra("played_words_map", playedWordsHashMap);
             startIntentActivity.putExtra("game_stopped", gameStopped);
             startIntentActivity.putExtra("upper_text", gameOverText.getText().toString());
+            startIntentActivity.putExtra("current_list", currentWordList);
             startActivity(startIntentActivity);
             return true;
         }
@@ -181,6 +185,28 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
+
+    public void addSpinnerValues() {
+
+        if(dbHandler.getWordCount() < 1){
+            spinnerArray.add("No lists created");
+        }
+        else {
+
+            spinnerArray = dbHandler.getLists();
+            spinnerArray.add("Choose a list, which you wanna play");
+
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, spinnerArray);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sItems = (Spinner) findViewById(R.id.game_mode_spinner);
+        sItems.setAdapter(adapter);
+        sItems.setSelection(spinnerArray.size()-1);
+    }
+
 
     // Navigation back arrow
 
@@ -244,6 +270,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         buttonBackGround = firstOption.getBackground();
 
         mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
+        sItems = (Spinner) findViewById(R.id.game_mode_spinner);
     }
 
 
@@ -282,6 +309,8 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
         if (gameEnd()) {
             translatableWord.setText("All words played");
+            sItems.setVisibility(View.VISIBLE);
+            startGame();
         } else {
 
 
@@ -402,7 +431,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // Get random word from database
 
     public String getRandomWord() {
-        Word randWord = dbHandler.getRandomWord();
+        Word randWord = dbHandler.getRandomWord(currentWordList);
         return randWord.getFirstWord();
     }
 
@@ -450,7 +479,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     public void setCorrectWord() {
         boolean check = false;
         while (!check) {
-            Word randWord = dbHandler.getRandomWord();
+            Word randWord = dbHandler.getRandomWord(currentWordList);
 
             if (playedWordsHashMap.containsKey(randWord.getSecondWord())) {
 
@@ -481,7 +510,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     public boolean gameEnd() {
 
-        if (playedWordsHashMap.size() == dbHandler.getWordCount()) {
+        if (playedWordsHashMap.size() == dbHandler.getWordListCount(currentWordList)) {
             return true;
         }
         return false;
@@ -610,6 +639,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
         gameStopped = true;
         hideAllButtons();
+        sItems.setVisibility(View.VISIBLE);
         translatableWord.setTextSize(20);
         translatableWord.setText("You got " + gamePoints + " points \n" + "Do you wanna save this result? ");
 
@@ -630,23 +660,44 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     }
 
+    public void startGame(){
+        hideAllButtons();
+        addSpinnerValues();
+    }
+
     public void reLoadGame(){
 
-        firstOption.setVisibility(View.VISIBLE);
-        secondOption.setVisibility(View.VISIBLE);
-        thirdOption.setVisibility(View.VISIBLE);
-        fourthOption.setVisibility(View.VISIBLE);
-        loadNewGame.setVisibility(View.INVISIBLE);
-        setAllBackToDefault();
+        currentWordList = sItems.getSelectedItem().toString();
 
-        gamePoints = 0;
-        playedWordsHashMap.clear();
+        int wordListCount = dbHandler.getWordListCount(currentWordList);
 
-        mProgressBar.setVisibility(View.VISIBLE);
-        gameOverText.setText("Pick correct translation for word ");
-        pointsTextView.setText("Points: "+ String.valueOf(gamePoints));
+        if(wordListCount < 4){
+            setContentView(R.layout.not_enough_words_in_db);
 
-        newQuestion();
+            moveToAddWords = (Button) findViewById(R.id.saveWordsBtn);
+            mNotEnoughWords = (TextView) findViewById(R.id.notEnoughWords);
+            mNotEnoughWords.setText("For starting the game, you need to have at least 4 saved word pairs. Currently you have " + String.valueOf(wordListCount) + " saved word pairs in this " + currentWordList + " word list");
+        }
+
+        else {
+
+            firstOption.setVisibility(View.VISIBLE);
+            secondOption.setVisibility(View.VISIBLE);
+            thirdOption.setVisibility(View.VISIBLE);
+            fourthOption.setVisibility(View.VISIBLE);
+            loadNewGame.setVisibility(View.INVISIBLE);
+            setAllBackToDefault();
+
+            gamePoints = 0;
+            playedWordsHashMap.clear();
+
+            mProgressBar.setVisibility(View.VISIBLE);
+            gameOverText.setText("Pick correct translation for word ");
+            pointsTextView.setText("Points: " + String.valueOf(gamePoints));
+            sItems.setVisibility(View.INVISIBLE);
+
+            newQuestion();
+        }
     }
 
     public void restartGameBtn(View view){

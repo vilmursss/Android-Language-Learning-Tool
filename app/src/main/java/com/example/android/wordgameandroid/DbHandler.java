@@ -120,7 +120,7 @@ public class DbHandler extends SQLiteOpenHelper {
 
     // Return random word object from database
 
-    public Word getRandomWord(){
+    public Word getRandomWord(String list){
 
         if(getWordCount() < 1){
             Word returnWordObject = new Word(0, "No words in DB", "", "");
@@ -128,23 +128,32 @@ public class DbHandler extends SQLiteOpenHelper {
             return returnWordObject;
         }
 
-        Word returnWordObject = new Word();
-        SQLiteDatabase db = this.getReadableDatabase();
-        int maxId = getWordCount();
-        Random rand = new Random();
-        String randomId = String.valueOf(rand.nextInt(maxId) + 1);
 
-        String WHERE = "" + ID + " = " + randomId;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        List<Word> listWords = new ArrayList<Word>();
+        String WHERE = "" + WORD_LIST + " = '" + list +"'";
         String selectQuery = "SELECT * FROM " + WORD_TABLE + " WHERE " + WHERE;
         Cursor query = db.rawQuery(selectQuery, null);
 
-            query.moveToFirst();
-            returnWordObject.setId(Integer.parseInt(query.getString(0)));
-            returnWordObject.setFirstWord(query.getString(1));
-            returnWordObject.setSecondWord(query.getString(2));
-            db.close();
+        if(query.moveToFirst()){
+            do {
 
-        return returnWordObject;
+                Word wordPair = new Word();
+                wordPair.setId(Integer.parseInt(query.getString(0)));
+                wordPair.setFirstWord(query.getString(1));
+                wordPair.setSecondWord(query.getString(2));
+                wordPair.setWordList(query.getString(3));
+                listWords.add(wordPair);
+
+            } while (query.moveToNext());
+        }
+
+        int maxSize = listWords.size();
+        Random rand = new Random();
+        int randomWord = rand.nextInt(maxSize);
+
+        return listWords.get(randomWord);
     }
 
     public ArrayList<String> getLists(){
@@ -167,6 +176,23 @@ public class DbHandler extends SQLiteOpenHelper {
                 }
 
         return allLists;
+    }
+
+    public int getWordListCount(String list){
+        SQLiteDatabase db = this.getReadableDatabase();
+        int counter = 0;
+
+        String WHERE = "" + WORD_LIST + " = '" + list +"'";
+        String selectQuery ="SELECT * FROM " + WORD_TABLE  + " WHERE " + WHERE;
+        Cursor query = db.rawQuery(selectQuery, null);
+
+        if(query.moveToFirst()){
+            do {
+               counter++;
+            } while (query.moveToNext());
+        }
+
+        return counter;
     }
 
     public ArrayList<String> getAllBesidesCurrentList(String currentList){

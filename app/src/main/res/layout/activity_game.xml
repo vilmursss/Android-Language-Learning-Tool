@@ -25,17 +25,16 @@
 
     <TextView
         android:id="@+id/roundWord"
-        android:layout_width="285dp"
-        android:layout_height="55dp"
+        android:layout_width="350dp"
+        android:layout_height="70dp"
         android:textStyle="bold"
+        android:textSize="20sp"
         android:textAlignment="center"
-        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.135" />
+        app:layout_constraintVertical_bias="0.110000014" />
 
     <TextView
         android:id="@+id/PickText"
@@ -57,7 +56,7 @@
     <Button
         android:id="@+id/secondBtn"
         android:layout_width="292dp"
-        android:layout_height="45dp"
+        android:layout_height="65dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -68,12 +67,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.397" />
+        app:layout_constraintVertical_bias="0.39999998" />
 
     <Button
         android:id="@+id/thirdBtn"
         android:layout_width="292dp"
-        android:layout_height="45dp"
+        android:layout_height="65dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -84,12 +83,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.548" />
+        app:layout_constraintVertical_bias="0.55" />
 
     <Button
         android:id="@+id/fourthBtn"
         android:layout_width="292dp"
-        android:layout_height="45dp"
+        android:layout_height="65dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -100,12 +99,12 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.722" />
+        app:layout_constraintVertical_bias="0.7" />
 
     <Button
         android:id="@+id/firstBtn"
         android:layout_width="292dp"
-        android:layout_height="45dp"
+        android:layout_height="65dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
@@ -116,7 +115,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.262" />
+        app:layout_constraintVertical_bias="0.25" />
 
     <Button
         android:id="@+id/restartGame"
@@ -132,7 +131,23 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.397" />
+        app:layout_constraintVertical_bias="0.402" />
+
+    <Button
+        android:id="@+id/saveHighScore"
+        android:layout_width="292dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:onClick="saveHighScore"
+        android:text="Save score"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.542" />
 
     <ProgressBar
         android:id="@+id/progressBar"

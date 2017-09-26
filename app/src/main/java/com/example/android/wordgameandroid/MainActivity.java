@@ -2,6 +2,7 @@ package com.example.android.wordgameandroid;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,12 +12,69 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.auth.api.Auth;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
+
+    //  FireBase authentication
+
+    private FirebaseAuth mFireBaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+
+    public static final int RC_SIGN_IN = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize firebase authentication
+
+        mFireBaseAuth = FirebaseAuth.getInstance();
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if(user != null){
+                }
+                else {
+                    startActivityForResult(
+                            AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setIsSmartLockEnabled(false)
+                                    .setAvailableProviders(
+                                            Arrays.asList(
+                                                    new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build()))
+                                    .build(),
+                            RC_SIGN_IN);
+
+
+                }
+            }
+        };
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RC_SIGN_IN){
+            if(resultCode == RESULT_OK){
+                Toast.makeText(MainActivity.this, "Signed in!", Toast.LENGTH_SHORT).show();
+            }
+            else if(resultCode == RESULT_CANCELED){
+                Toast.makeText(MainActivity.this, "Sign in canceled", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
     }
 
     // Create options menu
@@ -32,14 +90,29 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem){
-        int id = menuItem.getItemId();
-        if(id == R.id.settings_menu){
-            Intent startIntentActivity = new Intent(this, SettingsActivity.class);
-            startIntentActivity.putExtra("CLASS_INFORMATION", MainActivity.class);
-            startActivity(startIntentActivity);
-            return true;
+        switch(menuItem.getItemId()){
+            case R.id.settings_menu:
+                Intent startIntentActivity = new Intent(this, SettingsActivity.class);
+                startIntentActivity.putExtra("CLASS_INFORMATION", MainActivity.class);
+                startActivity(startIntentActivity);
+                return true;
+            case R.id.sign_out_menu:
+                AuthUI.getInstance().signOut(this);
+                return true;
         }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        mFireBaseAuth.removeAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        mFireBaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
     // Open add word pair activity

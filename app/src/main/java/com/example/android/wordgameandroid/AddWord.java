@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,12 @@ public class AddWord extends AppCompatActivity {
         if(id == R.id.settings_menu){
             Intent startIntentActivity = new Intent(this, SettingsActivity.class);
             startIntentActivity.putExtra("CLASS_INFORMATION", AddWord.class);
+            startActivity(startIntentActivity);
+            return true;
+        }
+        else if(id == R.id.sign_out_menu){
+            AuthUI.getInstance().signOut(this);
+            Intent startIntentActivity = new Intent(this, MainActivity.class);
             startActivity(startIntentActivity);
             return true;
         }

@@ -11,6 +11,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
 
 import java.util.ArrayList;
 
@@ -76,6 +79,14 @@ public class WordEdit extends AppCompatActivity {
             startActivity(startIntentActivity);
             return true;
         }
+
+        else if(id == R.id.sign_out_menu){
+            AuthUI.getInstance().signOut(this);
+            Intent startIntentActivity = new Intent(this, MainActivity.class);
+            startActivity(startIntentActivity);
+            return true;
+        }
+
         else {
             Intent goBackToModifyWordsActivity = new Intent(this, ModifyWords.class);
             startActivity(goBackToModifyWordsActivity);
@@ -127,6 +138,7 @@ public class WordEdit extends AppCompatActivity {
         String getWordListText = wordList.getText().toString();
 
        dbHandler.updateWordPair(wordPairId,getFirstWordText,getSecondWordText, getWordListText);
+        Toast.makeText(this, "Word pair udpated!", Toast.LENGTH_SHORT).show();
     }
 
     // Delete word pair click event option
@@ -134,5 +146,9 @@ public class WordEdit extends AppCompatActivity {
     public void deleteWordEditBtn(View view){
         DbHandler dbHandler = new DbHandler(this);
         dbHandler.deleteWordPair(wordPairId);
+        Toast.makeText(this, "Word pair deleted!", Toast.LENGTH_SHORT).show();
+        wordList.setText("");
+        firstWord.setText("");
+        secondWord.setText("");
     }
 }

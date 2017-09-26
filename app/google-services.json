@@ -1,0 +1,58 @@
+{
+  "project_info": {
+    "project_number": "998485176464",
+    "firebase_url": "https://androidwordgame.firebaseio.com",
+    "project_id": "androidwordgame",
+    "storage_bucket": "androidwordgame.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:998485176464:android:4b04653423e97189",
+        "android_client_info": {
+          "package_name": "com.example.android.wordgameandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "998485176464-4uc2jlvshahlcv27r72krhjiu92thdpn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.wordgameandroid",
+            "certificate_hash": "42df3f607bf63e9784be099f1caac32c0057287a"
+          }
+        },
+        {
+          "client_id": "998485176464-muroefluakpptga3c07loto5sff02nde.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeGEKOGgi_XNFLILb9TCu-JU58SIaKjJk"
+        },
+        {
+          "current_key": "AIzaSyDxkX1cWPtJshM8iwo0ouOCQ_mbLF15Tjc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "998485176464-muroefluakpptga3c07loto5sff02nde.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

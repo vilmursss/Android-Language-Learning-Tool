@@ -14,6 +14,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.firebase.ui.auth.AuthUI;
+
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -59,6 +61,13 @@ public class ModifyWords extends AppCompatActivity {
         if(id == R.id.settings_menu){
             Intent startIntentActivity = new Intent(this, SettingsActivity.class);
             startIntentActivity.putExtra("CLASS_INFORMATION", ModifyWords.class);
+            startActivity(startIntentActivity);
+            return true;
+        }
+
+        else if(id == R.id.sign_out_menu){
+            AuthUI.getInstance().signOut(this);
+            Intent startIntentActivity = new Intent(this, MainActivity.class);
             startActivity(startIntentActivity);
             return true;
         }

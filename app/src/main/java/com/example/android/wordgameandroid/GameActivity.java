@@ -31,6 +31,11 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.w3c.dom.Text;
 
@@ -39,6 +44,11 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    // FireBase
+
+    private FirebaseDatabase mFireDatabase;
+    private DatabaseReference mDatabaseReference;
 
     // SoundPool
 
@@ -66,6 +76,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     Button fourthOption;
     Button moveToAddWords;
     Button loadNewGame;
+    Button highScore;
 
     // DbHandler
 
@@ -94,6 +105,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     int gamePoints = 0;
     boolean gameStopped = true;
     String currentWordList = "";
+    boolean saveHighScoreOnlyOnce = true;
 
     // Sound boolean
 
@@ -162,6 +174,13 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
             startIntentActivity.putExtra("game_stopped", gameStopped);
             startIntentActivity.putExtra("upper_text", gameOverText.getText().toString());
             startIntentActivity.putExtra("current_list", currentWordList);
+            startActivity(startIntentActivity);
+            return true;
+        }
+
+        else if(id == R.id.sign_out_menu){
+            AuthUI.getInstance().signOut(this);
+            Intent startIntentActivity = new Intent(this, MainActivity.class);
             startActivity(startIntentActivity);
             return true;
         }
@@ -266,11 +285,20 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         thirdOption = (Button) findViewById(R.id.thirdBtn);
         fourthOption = (Button) findViewById(R.id.fourthBtn);
         loadNewGame = (Button) findViewById(R.id.restartGame);
+        highScore = (Button) findViewById(R.id.saveHighScore) ;
+        highScore.setVisibility(View.INVISIBLE);
         loadNewGame.setVisibility(View.INVISIBLE);
         buttonBackGround = firstOption.getBackground();
 
+        // ProgressBar
+
         mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
         sItems = (Spinner) findViewById(R.id.game_mode_spinner);
+
+        // FireBase objects
+
+        mFireDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference = mFireDatabase.getReference().child("highscores");
     }
 
 
@@ -638,6 +666,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         }
 
         gameStopped = true;
+        highScore.setVisibility(View.VISIBLE);
         hideAllButtons();
         sItems.setVisibility(View.VISIBLE);
         translatableWord.setTextSize(20);
@@ -655,6 +684,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         fourthOption.setVisibility(View.INVISIBLE);
         loadNewGame.setVisibility(View.VISIBLE);
 
+
         mProgressBar.setVisibility(View.INVISIBLE);
 
 
@@ -667,8 +697,9 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     public void reLoadGame(){
 
+        saveHighScoreOnlyOnce = true;
         currentWordList = sItems.getSelectedItem().toString();
-
+        highScore.setVisibility(View.INVISIBLE);
         int wordListCount = dbHandler.getWordListCount(currentWordList);
 
         if(wordListCount < 4){
@@ -721,6 +752,18 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         }
         else if(key.equals(getString(R.string.game_level_key))){
             loadGameLevel(sharedPreferences);
+        }
+    }
+
+    public void saveHighScore(View view){
+
+        if(saveHighScoreOnlyOnce) {
+            mDatabaseReference.setValue(String.valueOf(gamePoints));
+            Toast.makeText(this, "High score saved!", Toast.LENGTH_SHORT).show();
+            saveHighScoreOnlyOnce = false;
+        }
+        else {
+            Toast.makeText(this, "Score is already saved!", Toast.LENGTH_SHORT).show();
         }
     }
 }

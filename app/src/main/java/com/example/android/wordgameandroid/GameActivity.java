@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.preference.PreferenceFragment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,12 +35,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -49,6 +53,9 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
     private FirebaseDatabase mFireDatabase;
     private DatabaseReference mDatabaseReference;
+    private FirebaseAuth mFireBaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private String mUserName;
 
     // SoundPool
 
@@ -117,6 +124,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         super.onCreate(savedInstanceState);
 
             setContentView(R.layout.activity_game);
+            initFireBaseAuthentication();
             loadContentObjects();
             loadSoundPoolManager();
             sharedPreferences();
@@ -205,6 +213,19 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
+    @Override
+    protected void onPause(){
+        super.onPause();
+        mFireBaseAuth.removeAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        mFireBaseAuth.addAuthStateListener(mAuthStateListener);
+    }
+
+
     public void addSpinnerValues() {
 
         if(dbHandler.getWordCount() < 1){
@@ -226,6 +247,24 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         sItems.setSelection(spinnerArray.size()-1);
     }
 
+    // Initialize FireBase authentication
+
+    public void initFireBaseAuthentication() {
+        // Initialize firebase authentication
+        mFireBaseAuth = FirebaseAuth.getInstance();
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    mUserName = user.getDisplayName();
+                } else {
+                    Intent startIntentActivity = new Intent(GameActivity.this, MainActivity.class);
+                    startActivity(startIntentActivity);
+                }
+            }
+        };
+    }
 
     // Navigation back arrow
 
@@ -758,8 +797,9 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     public void saveHighScore(View view){
 
         if(saveHighScoreOnlyOnce) {
-            mDatabaseReference.setValue(String.valueOf(gamePoints));
-            Toast.makeText(this, "High score saved!", Toast.LENGTH_SHORT).show();
+            Log.d("SUUUPER", mUserName);
+            mDatabaseReference.child(mUserName).setValue(String.valueOf(gamePoints));
+            Toast.makeText(this, "High score saved! " + mUserName , Toast.LENGTH_SHORT).show();
             saveHighScoreOnlyOnce = false;
         }
         else {

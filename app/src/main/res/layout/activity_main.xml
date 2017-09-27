@@ -41,15 +41,15 @@
         app:layout_constraintVertical_bias="0.469" />
 
     <Button
-        android:id="@+id/rowCount"
+        android:id="@+id/highScores"
         android:layout_width="175dp"
         android:layout_height="50dp"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="rowCount"
-        android:text="row count"
+        android:onClick="showHighScores"
+        android:text="High scores"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintLeft_toLeftOf="parent"

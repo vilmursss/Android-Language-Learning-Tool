@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mFireBaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
+
     public static final int RC_SIGN_IN = 1;
 
     @Override
@@ -129,13 +130,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    // Toast current row count, mostly for development test purposes
+    // Show high scores
 
-    public void rowCount(View view){
-        DbHandler dbHandler = new DbHandler(this);
-        int wordCount = dbHandler.getWordCount();
-
-        Toast.makeText(this, "Current row count: " + wordCount + " words", Toast.LENGTH_SHORT).show();
+    public void showHighScores(View view){
+        Intent i = new Intent(this, HighScores.class);
+        startActivity(i);
     }
 
     // Delete everything from database

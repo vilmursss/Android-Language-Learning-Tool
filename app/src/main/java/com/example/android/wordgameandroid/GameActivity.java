@@ -56,6 +56,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     private FirebaseAuth mFireBaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private String mUserName;
+    private int mHighScore;
 
     // SoundPool
 
@@ -258,6 +259,9 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     mUserName = user.getDisplayName();
+                    mDatabaseReference = mFireDatabase.getReference().child(mUserName);
+
+
                 } else {
                     Intent startIntentActivity = new Intent(GameActivity.this, MainActivity.class);
                     startActivity(startIntentActivity);
@@ -334,10 +338,9 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         mProgressBar=(ProgressBar)findViewById(R.id.progressBar);
         sItems = (Spinner) findViewById(R.id.game_mode_spinner);
 
-        // FireBase objects
+        // FireBase object
 
         mFireDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFireDatabase.getReference().child("highscores");
     }
 
 
@@ -741,12 +744,12 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         highScore.setVisibility(View.INVISIBLE);
         int wordListCount = dbHandler.getWordListCount(currentWordList);
 
-        if(wordListCount < 4){
+        if(wordListCount < 5){
             setContentView(R.layout.not_enough_words_in_db);
 
             moveToAddWords = (Button) findViewById(R.id.saveWordsBtn);
             mNotEnoughWords = (TextView) findViewById(R.id.notEnoughWords);
-            mNotEnoughWords.setText("For starting the game, you need to have at least 4 saved word pairs. Currently you have " + String.valueOf(wordListCount) + " saved word pairs in this " + currentWordList + " word list");
+            mNotEnoughWords.setText("For starting the game, you need to have at least 5 saved word pairs. Currently you have " + String.valueOf(wordListCount) + " saved word pairs in this " + currentWordList + " word list");
         }
 
         else {
@@ -797,9 +800,8 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     public void saveHighScore(View view){
 
         if(saveHighScoreOnlyOnce) {
-            Log.d("SUUUPER", mUserName);
-            mDatabaseReference.child(mUserName).setValue(String.valueOf(gamePoints));
-            Toast.makeText(this, "High score saved! " + mUserName , Toast.LENGTH_SHORT).show();
+            mDatabaseReference.setValue(gamePoints);
+            Toast.makeText(this, "High score saved! ", Toast.LENGTH_SHORT).show();
             saveHighScoreOnlyOnce = false;
         }
         else {

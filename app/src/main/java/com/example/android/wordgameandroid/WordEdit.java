@@ -94,6 +94,8 @@ public class WordEdit extends AppCompatActivity {
         }
     }
 
+    // Add saved lists to spinner
+
     public void addSpinnerValues() {
 
         if(dbHandler.getWordCount() < 1){

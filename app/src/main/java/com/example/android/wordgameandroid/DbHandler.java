@@ -178,6 +178,8 @@ public class DbHandler extends SQLiteOpenHelper {
         return allLists;
     }
 
+    // Get word count for selected list
+
     public int getWordListCount(String list){
         SQLiteDatabase db = this.getReadableDatabase();
         int counter = 0;
@@ -194,6 +196,8 @@ public class DbHandler extends SQLiteOpenHelper {
 
         return counter;
     }
+
+    // Get all lists besides selected list
 
     public ArrayList<String> getAllBesidesCurrentList(String currentList){
         ArrayList<String> allLists = new ArrayList<String>();
@@ -221,6 +225,8 @@ public class DbHandler extends SQLiteOpenHelper {
 
         return allLists;
     }
+
+    // Get all words from a selected list
 
     public List<Word> getWordsByList(String list){
 

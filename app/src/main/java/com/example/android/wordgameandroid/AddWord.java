@@ -69,6 +69,8 @@ public class AddWord extends AppCompatActivity {
         }
     }
 
+    // Add created spinner values to spinner
+
     public void addSpinnerValues() {
 
         if(dbHandler.getWordCount() < 1){
@@ -131,6 +133,8 @@ public class AddWord extends AppCompatActivity {
         }
 
     }
+
+    // Create new list and add it to spinner and make this list automatically selected
 
     public void createNewList(View view){
 

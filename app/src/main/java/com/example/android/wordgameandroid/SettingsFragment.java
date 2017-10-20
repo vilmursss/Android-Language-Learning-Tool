@@ -2,7 +2,6 @@ package com.example.android.wordgameandroid;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -28,6 +27,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         }
     }
 
+    // Set selected preference
+
     private void setPreferenceSummary(Preference preference, String value){
         if(preference instanceof ListPreference){
             ListPreference listPreference = (ListPreference) preference;
@@ -37,6 +38,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
             }
         }
     }
+
+    // Inform if preference has changed in real-time
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {

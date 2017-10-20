@@ -16,8 +16,6 @@ import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +75,8 @@ public class ModifyWords extends AppCompatActivity {
             return true;
         }
     }
+
+    // Fetch all saved lists and add them to a spinner
 
     public void addSpinnerValues() {
 

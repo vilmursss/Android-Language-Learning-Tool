@@ -6,7 +6,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import java.util.HashMap;
@@ -38,6 +37,8 @@ public class SettingsActivity extends AppCompatActivity {
         navigateBackArrow();
 
     }
+
+    // Receive and send values back to activity which opened settings
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem){
@@ -82,6 +83,8 @@ public class SettingsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(menuItem);
     }
+
+    // Navigation arrow
 
     public void navigateBackArrow(){
         ActionBar actionBar = this.getSupportActionBar();

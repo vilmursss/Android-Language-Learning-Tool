@@ -1,49 +1,42 @@
 package com.example.android.wordgameandroid;
 
-import android.animation.Animator;
-import android.animation.ObjectAnimator;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.preference.PreferenceFragment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceManager;
-import android.text.GetChars;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -84,7 +77,6 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     Button fourthOption;
     Button moveToAddWords;
     Button loadNewGame;
-    Button highScore;
 
     // DbHandler
 
@@ -113,7 +105,6 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     int gamePoints = 0;
     boolean gameStopped = true;
     String currentWordList = "";
-    boolean saveHighScoreOnlyOnce = true;
 
     // Sound boolean
 
@@ -140,6 +131,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
                 String getUpperText = getIntent().getExtras().getString("upper_text");
                 gameOverText.setText(getUpperText);
                 currentWordList = getIntent().getExtras().getString("current_list");
+                addSpinnerValues();
 
             }
             if(gameStopped && playedWordsHashMap.size() >= 1){
@@ -226,6 +218,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         mFireBaseAuth.addAuthStateListener(mAuthStateListener);
     }
 
+    // Add values to spinner, which contains all saved lists
 
     public void addSpinnerValues() {
 
@@ -251,7 +244,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // Initialize FireBase authentication
 
     public void initFireBaseAuthentication() {
-        // Initialize firebase authentication
+
         mFireBaseAuth = FirebaseAuth.getInstance();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -260,7 +253,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
                 if (user != null) {
                     mUserName = user.getDisplayName();
                     mDatabaseReference = mFireDatabase.getReference().child(mUserName);
-
+                    getHighScore();
 
                 } else {
                     Intent startIntentActivity = new Intent(GameActivity.this, MainActivity.class);
@@ -269,6 +262,30 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
             }
         };
     }
+
+    // Get user highscore
+
+    public void getHighScore() {
+
+        mDatabaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if(dataSnapshot.exists()) {
+                        mHighScore = Integer.parseInt(dataSnapshot.getValue().toString());
+                    }
+                    else {
+                        mHighScore = 0;
+                    }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+
 
     // Navigation back arrow
 
@@ -328,8 +345,6 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         thirdOption = (Button) findViewById(R.id.thirdBtn);
         fourthOption = (Button) findViewById(R.id.fourthBtn);
         loadNewGame = (Button) findViewById(R.id.restartGame);
-        highScore = (Button) findViewById(R.id.saveHighScore) ;
-        highScore.setVisibility(View.INVISIBLE);
         loadNewGame.setVisibility(View.INVISIBLE);
         buttonBackGround = firstOption.getBackground();
 
@@ -359,6 +374,8 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
                 if(pbTimer >= mProgressBar.getMax()){
                     wrongAnswer();
+                    gameOverText.setText("Time ran out :(");
+
                 }
 
                 mProgressBar.setProgress((int)pbTimer);
@@ -378,11 +395,67 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         gameStopped = false;
 
         if (gameEnd()) {
-            translatableWord.setText("All words played");
-            sItems.setVisibility(View.VISIBLE);
-            startGame();
-        } else {
 
+            // Compare current gamepoints to user's highscore
+
+            if(gamePoints > mHighScore) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                builder.setTitle("New Highscore!");
+                builder.setMessage("Do you wanna save new highscore?" + " Your old highscore is " + mHighScore + " points" +
+                        ", but now you you got " + gamePoints + " points!");
+
+                builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                        mDatabaseReference.setValue(gamePoints);
+                        mHighScore = gamePoints;
+
+                        AlertDialog alertDialog = new AlertDialog.Builder(GameActivity.this).create();
+                        alertDialog.setTitle("New Highscore!");
+                        alertDialog.setMessage("New highscore saved!");
+                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        alertDialog.show();
+                    }
+                });
+
+                builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                translatableWord.setTextSize(16);
+                translatableWord.setText("All words played! Congratulations! You made new highscore! You got " + gamePoints + " points" +
+                        " and your old highscore is " + mHighScore + " points.");
+                sItems.setVisibility(View.VISIBLE);
+                startGame();
+            }
+            else {
+                translatableWord.setTextSize(16);
+                translatableWord.setText("All words played! You got " + gamePoints + " points. Unfortunately" +
+                        " this time you did not make a new record. Your current highscore is " + mHighScore + " points.");
+                sItems.setVisibility(View.VISIBLE);
+                startGame();
+            }
+        }
+
+        else {
+
+            // Random select correct answer to one button, then call function to fill other buttons
 
             int randInt = randomNumber();
 
@@ -532,6 +605,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // If chosen option is wrong, play this sound
 
     public void playWrongAnswerSound(){
+
         AudioManager audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         float actualVolume = (float) audioManager
                 .getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -547,6 +621,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
     // Set correct word using random number generator to one of options
 
     public void setCorrectWord() {
+
         boolean check = false;
         while (!check) {
             Word randWord = dbHandler.getRandomWord(currentWordList);
@@ -699,20 +774,67 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
             playWrongAnswerSound();
             mCountDownTimer.cancel();
 
-            if(pbTimer == mProgressBar.getMax()){
-                gameOverText.setText("Time ran out :(");
-            }
-            else {
+            if (pbTimer < mProgressBar.getMax()) {
                 gameOverText.setText("Wrong answer :(");
             }
+
         }
 
         gameStopped = true;
-        highScore.setVisibility(View.VISIBLE);
+
+        // Check if new highscore has been created
+
+        if(gamePoints > mHighScore){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle("New Highscore!");
+            builder.setMessage("Do you wanna save new highscore?" + " Your old highscore was " + mHighScore + " points" +
+                    ", but now you you got "  + gamePoints + " points!");
+
+            builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+
+                    dialog.dismiss();
+                    mDatabaseReference.setValue(gamePoints);
+                    mHighScore = gamePoints;
+
+                    AlertDialog alertDialog = new AlertDialog.Builder(GameActivity.this).create();
+                    alertDialog.setTitle("New Highscore!");
+                    alertDialog.setMessage("Highscore saved!");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+                }
+            });
+
+            builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    dialog.dismiss();
+                }
+            });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+
+            translatableWord.setTextSize(16);
+            translatableWord.setText("Congratulations! You made new highscore! You got " + gamePoints + " points " +
+                    "and your old highscore is " + mHighScore + " points.");
+        }
+        else {
+            translatableWord.setTextSize(16);
+            translatableWord.setText("You got " + gamePoints + " points! This time you did not break your " +
+                    "highscore, which is " + mHighScore + " points!");
+        }
         hideAllButtons();
         sItems.setVisibility(View.VISIBLE);
-        translatableWord.setTextSize(20);
-        translatableWord.setText("You got " + gamePoints + " points \n" + "Do you wanna save this result? ");
 
     }
 
@@ -725,24 +847,27 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         thirdOption.setVisibility(View.INVISIBLE);
         fourthOption.setVisibility(View.INVISIBLE);
         loadNewGame.setVisibility(View.VISIBLE);
-
-
         mProgressBar.setVisibility(View.INVISIBLE);
 
-
     }
+
+    // Call two functions to set up "game options"
 
     public void startGame(){
+
         hideAllButtons();
         addSpinnerValues();
+
     }
+
+    // Reload whole game
 
     public void reLoadGame(){
 
-        saveHighScoreOnlyOnce = true;
         currentWordList = sItems.getSelectedItem().toString();
-        highScore.setVisibility(View.INVISIBLE);
         int wordListCount = dbHandler.getWordListCount(currentWordList);
+
+        // Check if wordlist lenght is enough big
 
         if(wordListCount < 5){
             setContentView(R.layout.not_enough_words_in_db);
@@ -754,6 +879,7 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
 
         else {
 
+            translatableWord.setTextSize(20);
             firstOption.setVisibility(View.VISIBLE);
             secondOption.setVisibility(View.VISIBLE);
             thirdOption.setVisibility(View.VISIBLE);
@@ -773,15 +899,21 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+    // Reload game button onClick function
+
     public void restartGameBtn(View view){
         reLoadGame();
     }
+
+    // Directs user to Addwords activity, if not enough words in a List
 
     public void saveWordsBtn(View view){
 
         Intent i = new Intent(this, AddWord.class);
         startActivity(i);
     }
+
+    // Check sharedpreferences for sounds
 
     public void playSounds(boolean soundOrNot){
     playSounds = soundOrNot;
@@ -797,15 +929,4 @@ public class GameActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
-    public void saveHighScore(View view){
-
-        if(saveHighScoreOnlyOnce) {
-            mDatabaseReference.setValue(gamePoints);
-            Toast.makeText(this, "High score saved! ", Toast.LENGTH_SHORT).show();
-            saveHighScoreOnlyOnce = false;
-        }
-        else {
-            Toast.makeText(this, "Score is already saved!", Toast.LENGTH_SHORT).show();
-        }
-    }
 }
